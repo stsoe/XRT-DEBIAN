@@ -1,0 +1,4 @@
+usr/include/xrt/*
+usr/include/CL/*
+usr/lib/*/pkgconfig
+usr/lib/*/lib*.so
