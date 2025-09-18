@@ -6,6 +6,7 @@ Uploaders: Punit Agrawal <punit@debian.org>,
 	   Nobuhiro Iwamatsu <iwamatsu@debian.org>
 Build-Depends: cmake,
 	debhelper-compat (= 13),
+        dh-python,
 	doxygen [amd64],
 	libboost-filesystem-dev,
 	libboost-program-options-dev,
@@ -20,9 +21,10 @@ Build-Depends: cmake,
 	lsb-release [amd64],
 	ocl-icd-opencl-dev,
 	ocl-icd-dev,
-	pkg-config,
+	pkgconf,
 	protobuf-compiler,
         pybind11-dev,
+        python3-dev,
         rapidjson-dev,
         systemtap-sdt-dev,
         uuid-dev
@@ -35,7 +37,7 @@ Vcs-Browser: https://salsa.debian.org/xilinx-packages-team/xrt
 Package: libxrt1
 Architecture: arm64 amd64
 Multi-Arch: same
-Depends: ${misc:Depends}, ${shlibs:Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}, ${python3:Depends}
 Description: Xilinx Runtime (XRT) - runtime libraries
  Xilinx Runtime library (XRT) is an open-source easy to
  use software stack that facilitates management and usage of
