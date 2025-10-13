@@ -5,10 +5,10 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 export DEB_CFLAGS_MAINT_APPEND  = -Wall
 export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
-CONFIGURE_ARGS = -DCMAKE_BUILD_TYPE=Release -DXRT_NPU=1 -DXRT_UPSTREAM_DEBIAN=1
+CONFIGURE_ARGS = -DCMAKE_BUILD_TYPE=Release -DXRT_NPU=1 -DXRT_ALVEO=1
 
 %:
-	dh $@ --with python3 --sourcedir=XRT/src
+	dh $@ --with python3 --sourcedir=.
 
 override_dh_auto_configure:
 	dh_auto_configure -- $(CONFIGURE_ARGS)
