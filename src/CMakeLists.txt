@@ -3,7 +3,8 @@
 cmake_minimum_required(VERSION 3.16.0)
 project(XRT-UPSTREAM)
 
-set(XRT_UPSTREAM ON CACHE BOOL "Build XRT-UPSTREAM components")
+set(XRT_UPSTREAM_DEBIAN 1)
+set(XRT_UPSTREAM 1)
 
 add_subdirectory(xrt)
 add_subdirectory(xdna)
