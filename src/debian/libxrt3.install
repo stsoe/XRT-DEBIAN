@@ -1,0 +1,5 @@
+usr/lib/*/libxilinxopencl.so.*
+usr/lib/*/libxrt++.so.*
+usr/lib/*/libxrt_core.so.*
+usr/lib/*/libxrt_coreutil.so.*
+usr/lib/*/libxrt_trace.so.*
