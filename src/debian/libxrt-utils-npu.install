@@ -1,0 +1,4 @@
+usr/bin/xrt-replay
+usr/bin/xrt-runner
+usr/bin/xrt-tracer
+usr/bin/aiebu-*

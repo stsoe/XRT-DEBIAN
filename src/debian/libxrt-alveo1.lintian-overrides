@@ -3,3 +3,4 @@
 lacks-unversioned-link-to-shared-library
 # private library
 package-name-doesnt-match-sonames
+shared-library-lacks-version
