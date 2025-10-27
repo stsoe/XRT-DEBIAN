@@ -1,0 +1,8 @@
+PACKAGE_NAME="zocl-edge"
+PACKAGE_VERSION="#MODULE_VERSION#"
+MAKE[0]="cd edge/drm/zocl; make -j KERNEL_SRC=${kernel_source_dir}; cd -"
+CLEAN="cd edge/drm/zocl; make clean KERNEL_SRC=${kernel_source_dir}; cd -"
+BUILT_MODULE_NAME[0]=zocl
+BUILT_MODULE_LOCATION[0]="edge/drm/zocl"
+DEST_MODULE_LOCATION[0]="/kernel/extras"
+LOAD=no

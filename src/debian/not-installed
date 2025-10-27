@@ -1,0 +1,11 @@
+.clang-tidy
+CMake/*
+include/*
+platform/*
+python/*
+runtime_src/*
+usr/license/LICENSE
+usr/share/completions/*
+usr/share/doc/CHANGELOG.rst
+usr/share/doc/CONTRIBUTING.rst
+usr/version.json

@@ -1,3 +1,4 @@
+usr/include/aiebu/*
 usr/include/xrt/*
 usr/include/CL/*
 usr/lib/*/pkgconfig
