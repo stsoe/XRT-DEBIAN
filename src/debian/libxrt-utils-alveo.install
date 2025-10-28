@@ -1,0 +1,3 @@
+usr/bin/xbflash.qspi
+usr/bin/xbmgmt
+usr/local/bin/xbflash2 /usr/bin/

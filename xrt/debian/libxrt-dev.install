@@ -1,6 +1,0 @@
-usr/include/xrt/*
-usr/include/CL/*
-usr/lib/*/pkgconfig
-usr/lib/*/lib*.so
-usr/lib/*/lib*.a
-usr/share/cmake/*

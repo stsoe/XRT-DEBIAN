@@ -1,0 +1,4 @@
+usr/lib/*/libxrt_driver_xdna.so.*
+usr/lib/*/libxrt_driver_xdna.so.*
+usr/lib/*/libxdp*.so.*
+usr/lib/*/xrt/*/libxdp*.so.*

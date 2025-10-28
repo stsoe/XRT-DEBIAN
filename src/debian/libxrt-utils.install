@@ -1,0 +1,3 @@
+usr/bin/xrt-smi
+usr/bin/xclbinutil
+etc/OpenCL/vendors/xilinx.icd

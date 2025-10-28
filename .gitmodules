@@ -1,6 +1,6 @@
 [submodule "XRT"]
-	path = xrt/XRT
+	path = src/xrt/XRT
 	url = https://github.com/Xilinx/XRT.git
 [submodule "xdna/xdna-driver"]
-	path = xdna/xdna-driver
+	path = src/xdna/xdna-driver
 	url = git@github.com:amd/xdna-driver.git
