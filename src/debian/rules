@@ -5,6 +5,7 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 export DEB_CFLAGS_MAINT_APPEND  = -Wall
 export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
+BUILDDIR := obj-$(shell dpkg-architecture -q DEB_HOST_GNU_TYPE)
 CONFIGURE_ARGS = -DCMAKE_BUILD_TYPE=Release -DXRT_NPU=1 -DXRT_ALVEO=1
 
 %:
@@ -16,7 +17,16 @@ override_dh_auto_configure:
 override_dh_auto_install:
 	dh_auto_install
 
+	# udev rules
+	mkdir -p debian/xrt-xocl-dkms/lib/udev/rules.d
+	install -m 644 xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl/mgmtpf/99-xclmgmt.rules debian/xrt-xocl-dkms/lib/udev/rules.d
+	install -m 644 xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl/userpf/99-xocl.rules debian/xrt-xocl-dkms/lib/udev/rules.d
+	# dkms postinst/prerm hooks
+	dh_dkms -pxrt-xocl-dkms -- $(BUILDDIR)/xrt/XRT/src/dkms.conf
+	# Overwrite xbtop wrapper script
+	mv debian/tmp/usr/python/xbtop.py debian/tmp/usr/bin/xbtop
+
 override_dh_auto_test:
 
 # Override dh_missing
-override_dh_missing:
+#override_dh_missing:

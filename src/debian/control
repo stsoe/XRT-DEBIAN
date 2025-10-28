@@ -8,6 +8,7 @@ Uploaders: Punit Agrawal <punit@debian.org>,
 Build-Depends: cmake,
 	debhelper-compat (= 13),
 	bash-completion,
+        dh-dkms,
         dh-python,
 	doxygen [amd64],
 	git,
@@ -183,3 +184,19 @@ Description: Xilinx Runtime (XRT) - runtime -- utilities
  userspace and kernel driver components.
  .
  This package contains a utilities from the XRT Alveo project.
+
+Package: xrt-xocl-dkms
+Architecture: amd64
+Depends: ${misc:Depends}, ${shlibs:Depends}, dkms
+Description: Xilinx Runtime (XRT) - runtime -- utilities
+ Xilinx Runtime library (XRT) is an open-source easy to
+ use software stack that facilitates management and usage of
+ field-programmable gate array (FPGA) / Adaptive Compute Acceleration
+ Platform (ACAP) devices. Users use familiar programming languages
+ like C/C++ or Python to write host code which uses XRT to interact
+ with FPGA/ACAP device. XRT exports well defined set of software APIs
+ that work across PCIe based datacenter platforms and ZYNQ UltraScale+
+ MPSoC/Versal ACAP based embedded platforms. XRT is a combination of
+ userspace and kernel driver components.
+ .
+ This package contains the XOCL DKMS kernel drivers.

@@ -2,10 +2,11 @@ usr/include/aiebu/*
 usr/include/xrt/*
 usr/include/CL/*
 usr/lib/*/pkgconfig
-usr/lib/*/libxrt_coreutil.so
 usr/lib/*/libxilinxopencl.so
+usr/lib/*/libxrt_coreutil.so
+usr/lib/*/libxrt++.so
 usr/lib/*/libaiebu.a
 usr/lib/*/libxilinxopencl.a
-usr/lib/*/libxrt++.a
 usr/lib/*/libxrt_coreutil.a
+usr/lib/*/libxrt++.a
 usr/share/cmake/*
