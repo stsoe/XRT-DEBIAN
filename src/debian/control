@@ -154,7 +154,7 @@ Description: Xilinx Runtime (XRT) - runtime -- utilities
 Package: libxrt-utils-npu
 Architecture: arm64 amd64
 Section: utils
-Depends: ${misc:Depends}, ${shlibs:Depends}, python3, libxrt-utils, libxrt3 (= ${binary:Version})
+Depends: ${misc:Depends}, ${shlibs:Depends}, python3, libxrt-utils, libxrt-npu1 (= ${binary:Version})
 Description: Xilinx Runtime (XRT) - runtime -- utilities
  Xilinx Runtime library (XRT) is an open-source easy to
  use software stack that facilitates management and usage of
@@ -171,7 +171,7 @@ Description: Xilinx Runtime (XRT) - runtime -- utilities
 Package: libxrt-utils-alveo
 Architecture: arm64 amd64
 Section: utils
-Depends: ${misc:Depends}, ${shlibs:Depends}, python3, libxrt-utils, libxrt3 (= ${binary:Version})
+Depends: ${misc:Depends}, ${shlibs:Depends}, python3, libxrt-utils, libxrt-alveo1 (= ${binary:Version})
 Description: Xilinx Runtime (XRT) - runtime -- utilities
  Xilinx Runtime library (XRT) is an open-source easy to
  use software stack that facilitates management and usage of
