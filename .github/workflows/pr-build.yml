@@ -1,0 +1,54 @@
+name: PR Build
+
+on:
+  pull_request:
+    branches: main
+    types: [opened, synchronize, reopened]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: |
+          docker build -t xrt-debian-unstable -f dockerfiles/debian_unstable.Dockerfile dockerfiles/
+
+      - name: Prepare build artifacts directory
+        run: |
+          mkdir -p ${{ github.workspace }}/build-output
+
+      - name: Run build script in container
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/workspace \
+            -v ${{ github.workspace }}/build-output:/build-output \
+            -w /workspace \
+            xrt-debian-unstable \
+            bash -c "dockerfiles/build.sh && cp -v /tmp/upstream/*.deb /tmp/upstream/*.tar.* /tmp/upstream/*.changes /build-output/ 2>/dev/null || true"
+
+      - name: List build artifacts
+        if: always()
+        run: |
+          echo "Build artifacts:"
+          ls -lh ${{ github.workspace }}/build-output/ || echo "No artifacts found"
+
+      - name: Upload build artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xrt-debian-packages
+          path: build-output/
+          if-no-files-found: warn
+          retention-days: 30
