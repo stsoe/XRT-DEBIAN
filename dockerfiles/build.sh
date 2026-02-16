@@ -39,7 +39,7 @@ find . -type f -name \*.swo -exec /bin/rm {} \;
 /bin/rm -rf xdna/xdna-driver/tools/bins
 
 # Create the source archive from filtered sources
-tar cvf /tmp/upstream/xrt-src.tar .
+tar cvfJ /tmp/upstream/xrt-src.tar.xz .
 
 # Copy back to host, can only be done as user
 # cp /tmp/upstream/xrt-src.tar <dst>
