@@ -14,7 +14,7 @@ HERE=$PWD
 
 # Install build dependencies declared in the package's debian/control
 cd $ROOT_DIR/src
-sudo apt-get build-dep xrt
+apt-get build-dep -y xrt
 
 # Copy and filter sources into /tmp
 # Copy
