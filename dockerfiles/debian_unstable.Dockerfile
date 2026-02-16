@@ -1,7 +1,4 @@
-# % sudo docker build -t xrt-debian-unstable .
-# %% <path>/xrt-debian-testing.sh
-# % sudo docker ps
-# % sudo docker commit <hash> xrt-debian-testing
+# % docker build -t xrt-debian-unstable -f dockerfiles/debian_unstable.Dockerfile .
 
 FROM debian:unstable
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Script to build the Docker image for TheRock development
+# Script to build the Docker image for NPU builds
 
 set -e
 
