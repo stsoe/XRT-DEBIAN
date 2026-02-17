@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.16.0)
 project(XRT-UPSTREAM)
 
-set(XRT_BUILD_NUMBER 0)
+set(XRT_BUILD_NUMBER 75)
 set(XRT_UPSTREAM_DEBIAN 1)
 set(XRT_UPSTREAM 1)
 
