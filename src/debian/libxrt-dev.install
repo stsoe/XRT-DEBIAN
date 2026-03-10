@@ -1,9 +1,11 @@
 usr/include/aiebu/*
+usr/include/hip/*
 usr/include/xrt/*
 usr/include/CL/*
 usr/lib/*/pkgconfig
 usr/lib/*/libxilinxopencl.so
 usr/lib/*/libxrt_coreutil.so
+usr/lib/*/libxrt_hip.so
 usr/lib/*/libxrt++.so
 usr/lib/*/libaiebu.a
 usr/lib/*/libxilinxopencl.a

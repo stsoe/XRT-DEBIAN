@@ -6,7 +6,7 @@ export DEB_CFLAGS_MAINT_APPEND  = -Wall
 export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
 BUILDDIR := obj-$(shell dpkg-architecture -q DEB_HOST_GNU_TYPE)
-CONFIGURE_ARGS = -DCMAKE_BUILD_TYPE=Release -DXRT_NPU=1 -DXRT_ALVEO=1
+CONFIGURE_ARGS = -DCMAKE_BUILD_TYPE=Release -DXRT_NPU=1 -DXRT_ALVEO=1 -DXRT_ENABLE_HIP=1
 
 %:
 	dh $@ --with python3 --sourcedir=.

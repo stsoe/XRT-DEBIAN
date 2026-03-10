@@ -16,6 +16,9 @@ HERE=$PWD
 cd $ROOT_DIR/src
 apt-get build-dep -y xrt
 
+# Cleanup from previous builds
+/bin/rm -rf /tmp/upstream
+
 # Copy and filter sources into /tmp
 # Copy
 mkdir -p /tmp/upstream/build
