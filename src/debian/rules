@@ -6,10 +6,11 @@ export DEB_CFLAGS_MAINT_APPEND  = -Wall
 export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
 BUILDDIR := obj-$(shell dpkg-architecture -q DEB_HOST_GNU_TYPE)
-CONFIGURE_ARGS = -DCMAKE_BUILD_TYPE=Release -DXRT_NPU=1 -DXRT_ALVEO=1 -DXRT_ENABLE_HIP=1
+
+CONFIGURE_ARGS = -DCMAKE_BUILD_TYPE=Release -DXRT_NPU=1 -DXRT_ALVEO=1 -DCMAKE_BUILD_RPATH_USE_ORIGIN=ON -DXRT_ENABLE_HIP=ON
 
 %:
-	dh $@ --with python3 --sourcedir=.
+	dh $@ --with bash-completion --with python3 --sourcedir=.
 
 override_dh_auto_configure:
 	dh_auto_configure -- $(CONFIGURE_ARGS)
@@ -17,16 +18,23 @@ override_dh_auto_configure:
 override_dh_auto_install:
 	dh_auto_install
 
+	# Alveo HW emulation only for amd64
+	if [ "$(DEB_HOST_ARCH)" = "amd64" ] ; then \
+	  mkdir -p debian/libxrt-alveo2/usr/lib/$(DEB_HOST_GNU_TYPE); \
+	  mv debian/tmp/usr/lib/$(DEB_HOST_GNU_TYPE)/libxrt_hwemu*.so.* debian/libxrt-alveo2/usr/lib/$(DEB_HOST_GNU_TYPE); \
+	  mv debian/tmp/usr/lib/$(DEB_HOST_GNU_TYPE)/libxrt_swemu*.so.* debian/libxrt-alveo2/usr/lib/$(DEB_HOST_GNU_TYPE); \
+	  mv debian/tmp/usr/lib/$(DEB_HOST_GNU_TYPE)/libxrt_noop.so.* debian/libxrt-alveo2/usr/lib/$(DEB_HOST_GNU_TYPE); \
+	fi
+
 	# udev rules
-	mkdir -p debian/xrt-xocl-dkms/lib/udev/rules.d
-	install -m 644 xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl/mgmtpf/99-xclmgmt.rules debian/xrt-xocl-dkms/lib/udev/rules.d
-	install -m 644 xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl/userpf/99-xocl.rules debian/xrt-xocl-dkms/lib/udev/rules.d
+	mkdir -p debian/xrt-xocl-dkms/usr/lib/udev/rules.d
+	install -m 644 xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl/mgmtpf/99-xclmgmt.rules debian/xrt-xocl-dkms/usr/lib/udev/rules.d
+	install -m 644 xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl/userpf/99-xocl.rules debian/xrt-xocl-dkms/usr/lib/udev/rules.d
 	# dkms postinst/prerm hooks
 	dh_dkms -pxrt-xocl-dkms -- $(BUILDDIR)/xrt/XRT/src/dkms.conf
 	# Overwrite xbtop wrapper script
 	mv debian/tmp/usr/python/xbtop.py debian/tmp/usr/bin/xbtop
 
 override_dh_auto_test:
-
-# Override dh_missing
-#override_dh_missing:
+	make -C $(BUILDDIR) install DESTDIR=`pwd`/$(BUILDDIR) # xrt-smi and xbmgmt tests require install
+	dh_auto_test

@@ -1,4 +1,4 @@
-# % docker build -t xrt-debian-unstable -f dockerfiles/debian_unstable.Dockerfile .
+# % docker build -t debuild-debian-unstable -f debian_unstable.Dockerfile .
 
 FROM debian:unstable
 
@@ -31,7 +31,8 @@ apt-get install -y \
     bash-completion \
     dh-python \
     help2man \
-    systemtap-sdt-dev
+    systemtap-sdt-dev \
+    quilt
 
 # Configure git to trust all directories (needed for version detection in containers)
 RUN git config --global --add safe.directory '*'

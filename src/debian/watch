@@ -1,0 +1,5 @@
+Version: 5
+Source: https://api.github.com/repos/Xilinx/xrt/releases?per_page=100
+Matching-Pattern: https://github.com/Xilinx/XRT/releases/download/@ANY_VERSION@/.*@ANY_VERSION@@ARCHIVE_EXT@
+Repack: no
+Searchmode: plain

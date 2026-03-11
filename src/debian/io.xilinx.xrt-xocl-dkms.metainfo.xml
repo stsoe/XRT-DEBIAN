@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="driver">
+  <id>io.xilinx.xrt-xocl-dkms</id>
+  <name>Xilinx XRT XOCL DKMS Drivers</name>
+  <summary>Linux kernel drivers for Xilinx FPGA/ACAP devices</summary>
+  <description>
+    <p>
+      This package provides the Linux kernel drivers for Xilinx FPGA and Adaptive Compute Acceleration
+      Platform (ACAP) devices. The drivers include management and user physical function drivers that
+      enable PCIe-based datacenter platforms to work with the Xilinx Runtime (XRT).
+    </p>
+    <p>
+      The package includes XOCL (Xilinx OpenCL) drivers for both management and user functions,
+      providing device control, memory management, and compute acceleration capabilities.
+    </p>
+  </description>
+  <categories>
+    <category>System</category>
+  </categories>
+  <keywords>
+    <keyword>xilinx</keyword>
+    <keyword>fpga</keyword>
+    <keyword>acap</keyword>
+    <keyword>opencl</keyword>
+    <keyword>driver</keyword>
+    <keyword>xrt</keyword>
+    <keyword>xocl</keyword>
+  </keywords>
+  <url type="homepage">https://www.xilinx.com/products/design-tools/vitis/xrt.html</url>
+  <url type="bugtracker">https://github.com/Xilinx/XRT/issues</url>
+  <metadata_license>apache-2.0</metadata_license>
+  <project_license>GPL-2.0+ and Apache-2.0</project_license>
+  <developer_name>Xilinx Inc / AMD</developer_name>
+  
+  <!-- Hardware support information -->
+  <provides>
+    <!-- Xilinx/AMD PCI vendor ID 0x10EE devices -->
+    <modalias>pci:v000010EEd00004A47sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00004A48sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00004A87sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00004A88sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00004B47sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00004B48sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00004B87sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00004B88sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd0000503Csv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00005034sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00005035sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd0000513Csv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd0000684Fsv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00006850sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd0000688Fsv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00006890sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd0000694Fsv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00006950sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00006987sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00006988sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd0000698Fsv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00006A4Fsv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00006A8Fsv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00006A9Fsv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00006B0Fsv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00006E4Fsv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00006E8Fsv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd0000788Fsv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd0000798Fsv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd0000888Fsv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd0000898Fsv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd0000A883sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd0000A983sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00005000sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00005004sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00005020sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00005028sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00005030sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00005044sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00005048sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00005050sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd0000504Esv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd0000505Csv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd0000506Csv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00005074sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00005078sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00005094sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd000050B0sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd000050B4sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00005700sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd00006098sv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000010EEd0000E098sv*sd*bc*sc*i*</modalias>
+    <!-- Altera/Intel PCI vendor ID 0x13FE devices -->
+    <modalias>pci:v000013FEd0000006Csv*sd*bc*sc*i*</modalias>
+    <modalias>pci:v000013FEd00000078sv*sd*bc*sc*i*</modalias>
+  </provides>
+  
+  <releases>
+    <release version="2.19.0" date="2025-01-01"/>
+  </releases>
+</component>

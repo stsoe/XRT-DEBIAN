@@ -1,14 +1,8 @@
 usr/include/aiebu/*
-usr/include/hip/*
 usr/include/xrt/*
 usr/include/CL/*
+usr/include/hip/*
 usr/lib/*/pkgconfig
-usr/lib/*/libxilinxopencl.so
-usr/lib/*/libxrt_coreutil.so
-usr/lib/*/libxrt_hip.so
-usr/lib/*/libxrt++.so
-usr/lib/*/libaiebu.a
-usr/lib/*/libxilinxopencl.a
-usr/lib/*/libxrt_coreutil.a
-usr/lib/*/libxrt++.a
+usr/lib/*/*.a
+usr/lib/*/*.so
 usr/share/cmake/*

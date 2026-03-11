@@ -3,13 +3,20 @@ Upstream-Name: xrt
 Upstream-Contact: Sonal Santan <sonal.santan@xilinx.com>
 Source: https://github.com/Xilinx/XRT.git
 Files-Excluded:
- xrt/XRT/src/runtime_src/core/edge/user/test/usertest
+ xrt/XRT/src/runtime_src/core/edge/user/test
+ xrt/XRT/src/runtime_src/core/common/aiebu/publish/gradle/wrapper/gradle-wrapper.jar
+ xrt/XRT/src/runtime_src/aie-rt/driver/tests/utest/elf_files/aieml_elfs/passthrough
+ xrt/XRT/src/runtime_src/aie-rt/driver/tests/utest/elf_files/aie_elfs/passthrough
+ xrt/XRT/src/runtime_src/aie-rt/driver/tests/utest/elf_files/aie_elfs/overlap_elf
+ xrt/XRT/src/runtime_src/aie-rt/driver/tests/utest/elf_files/aie_elfs/mmul
+ xrt/XRT/src/runtime_src/aie-rt/driver/tests/utest/elf_files/aie_elfs/large_elf
 
 Files: *
-Copyright: 2015-2025, Xilinx, Inc
+Copyright: 2016-2022, Xilinx, Inc
+           2022-2025, Advanced Micro Devices, Inc
 License: Apache-2.0
 
-Files: xrt/XRT/src/runtime_src/core/common/elf/*
+Files: xrt/XRT/src/runtime_src/core/common/elf/elfio/*
 Copyright: 2001-present, Serge Lamikhov-Center
 License: MIT
 
@@ -18,7 +25,6 @@ Files: xrt/XRT/src/runtime_src/core/common/drv/*
  xrt/XRT/src/runtime_src/core/edge/include/zynq_ioctl.h
  xrt/XRT/src/runtime_src/core/pcie/driver/aws/kernel/mgmt/mgmt-sysfs.c
  xrt/XRT/src/runtime_src/core/pcie/driver/linux/*
- xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl/*
 Copyright: 2017 - 2020 Xilinx, Inc.
 License: GPL-2
 
@@ -51,7 +57,7 @@ Files: xrt/XRT/src/runtime_src/core/include/ert.h
  xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl/devices.h
  xrt/XRT/src/runtime_src/tools/scripts/header.lic
 Copyright: 2015-2020, Xilinx Inc
-License: Apache-2.0 and/or GPL-2+
+License: Apache-2.0 or GPL-2+
 
 Files: xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl/lib/libfdt/fdt.c
  xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl/lib/libfdt/fdt_empty_tree.c
@@ -64,7 +70,7 @@ Files: xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl/lib/libfdt/fdt.c
  xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl/lib/libfdt/libfdt_internal.h
 Copyright: 2006, David Gibson, IBM Corporation.
   2012, David Gibson, IBM Corporation.
-License: BSD-2-clause and/or GPL-2+
+License: BSD-2-clause or GPL-2+
 
 Files: xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/*
 Copyright: 2014-2022, Jarryd Beck
@@ -80,16 +86,18 @@ Files: xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/utils/*
 Copyright: 2024-2025, Advanced Micro Devices, Inc. All rights reserved.
 License: MIT
 
-Files: xrt/XRT/src/runtime_src/core/pcie/driver/linux/include/libxdma_api.h
+Files: xrt/XRT/src/runtime_src/core/common/api/aie/xrt_graph.cpp
+ xrt/XRT/src/runtime_src/core/include/xcl_graph.h
+ xrt/XRT/src/runtime_src/core/pcie/driver/linux/include/libxdma_api.h
  xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl/lib/libxdma_api.h
 Copyright: 2016-2020, Xilinx, Inc
-License: Apache-2.0 and/or GPL-2
+License: Apache-2.0 or GPL-2
 
 Files: xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl/lib/libfdt/fdt.h
  xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl/lib/libfdt/libfdt_env.h
 Copyright: 2006, David Gibson, IBM Corporation.
   2012, Kim Phillips, Freescale Semiconductor.
-License: BSD-2-clause and/or GPL-2+
+License: BSD-2-clause or GPL-2+
 
 Files: xrt/XRT/src/include/1_2/CL/cl_ext.h
  xrt/XRT/src/include/1_2/CL/cl_ext_xilinx.h
@@ -103,21 +111,21 @@ License: Apache-2.0
 Files: xrt/XRT/src/runtime_src/core/include/xclerr.h
        xrt/XRT/src/runtime_src/core/pcie/driver/linux/include/xocl_ioctl.h
 Copyright: 2017, Xilinx, Inc.
-License: Apache-2.0 and/or GPL-2+
+License: Apache-2.0 or GPL-2+
 
 Files: xrt/XRT/src/runtime_src/core/include/xclbin.h
 Copyright: 2015-2020, Xilinx Inc
-License: Apache-2.0 and/or GPL-3+
+License: Apache-2.0 or GPL-3+
 
 Files: xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl/lib/libfdt/fdt_addresses.c
 Copyright: 2014, David Gibson <david@gibson.dropbear.id.au>
   2018, embedded brains GmbH
-License: BSD-2-clause and/or GPL-2+
+License: BSD-2-clause or GPL-2+
 
 Files: xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl/lib/libfdt/fdt_overlay.c
 Copyright: 2016, Free Electrons
   2016, NextThing Co.
-License: BSD-2-clause and/or GPL-2+
+License: BSD-2-clause or GPL-2+
 
 Files: xrt/XRT/build/checkpatch/spelling.txt
 Copyright: Xilinx, Inc.
@@ -133,6 +141,35 @@ Files: xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl/subdev/xiic.c
 Copyright: 2009-2010, Intel Corporation
   2017, Xilinx, Inc.
 License: GPL-2+
+
+Files: xrt/XRT/src/runtime_src/core/common/gsl/*
+Copyright: 2015, Microsoft Corporation. All rights reserved.
+License: MIT
+
+Files: xrt/XRT/src/runtime_src/core/common/json/nlohmann/*
+Copyright: 2013-2025, Niels Lohmann <https://nlohmann.me>
+License: MIT
+
+Files: xdna/xdna-driver/src/shim/*
+ xdna/xdna-driver/src/shim_ve2/*
+ xdna/xdna-driver/tools/*
+ xdna/xdna-driver/test/*
+ xdna/xdna-driver/CMakeLists.txt
+ xdna/xdna-driver/CMake/*
+Copyright: 2022-2025, Advanced Micro Devices, Inc. All rights reserved.
+License: Apache-2.0
+
+Files: xdna/xdna-driver/src/driver/*
+Copyright: 2022-2025, Advanced Micro Devices, Inc.
+License: GPL-2
+
+Files: xdna/xdna-driver/src/shim/virtio/drm_hw.h
+Copyright: 2022, Google LLC
+License: MIT
+
+Files: xdna/xdna-driver/src/shim/virtio/amdxdna_proto.h
+Copyright: 2025, Advanced Micro Devices, Inc.
+License: MIT
 
 Files: xrt/XRT/src/runtime_src/xocl/api/khronos/check_copy_overlap.cpp
 Copyright: 2011, The Khronos Group Inc.
@@ -206,33 +243,6 @@ License: BSD-2-clause
  TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
  PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
  BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- POSSIBILITY OF SUCH DAMAGE.
-
-License: BSD-3-clause
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions are met:
- .
- 1) Redistributions of source code must retain the above copyright notice,
- this list of conditions and the following disclaimer.
- .
- 2) Redistributions in binary form must reproduce the above copyright notice,
- this list of conditions and the following disclaimer in the documentation
- and/or other materials provided with the distribution.
- .
- 3) Neither the name of the ORGANIZATION nor the names of its contributors
- may be used to endorse or promote products derived from this software
- without specific prior written permission.
- .
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
- LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN

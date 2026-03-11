@@ -14,7 +14,11 @@ HERE=$PWD
 
 # Install build dependencies declared in the package's debian/control
 cd $ROOT_DIR/src
+apt-get update
 apt-get build-dep -y xrt
+
+# Doesn't seem to come in build-dep, so install manually
+apt-get install libamdhip64-dev appstream -y
 
 # Cleanup from previous builds
 /bin/rm -rf /tmp/upstream
@@ -29,6 +33,9 @@ cd /tmp/upstream/build
 /bin/rm -rf xdna/xdna-driver/xrt
 /bin/rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/ELFIO
 /bin/rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/lib/aie-rt
+/bin/rm -rf xrt/XRT/src/runtime_src/core/edge/user/test
+/bin/rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/publish
+/bin/rm -rf xrt/XRT/src/runtime_src/aie-rt/driver/tests/utest/elf_files
 find . -type f -name .git -exec /bin/rm -rf {} \;
 find . -type f -name .gitattributes -exec /bin/rm -rf {} \;
 find . -type f -name .gitignore -exec /bin/rm -rf {} \;
@@ -41,13 +48,17 @@ find . -type f -name \*.swn -exec /bin/rm {} \;
 find . -type f -name \*.swo -exec /bin/rm {} \;
 /bin/rm -rf xdna/xdna-driver/tools/bins
 
-# Create the source archive from filtered sources
+# Create the source archive from filtered sources. We don't apply
+# patches here because they are applied on the extracted tarball
+# sources by the build.
 tar cvfJ /tmp/upstream/xrt-src.tar.xz .
+
+# Apply patches. For local native builds (see debian/source/format)
+# debuild does not apply patches automatically.
+QUILT_PATCHES=debian/patches quilt push -a
 
 # Copy back to host, can only be done as user
 # cp /tmp/upstream/xrt-src.tar <dst>
 
 # Build
 debuild -us -uc
-
-

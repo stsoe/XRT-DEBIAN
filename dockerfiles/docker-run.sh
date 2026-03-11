@@ -1,10 +1,47 @@
 #!/bin/bash
-# Script to run the Docker container for TheRock development
+# Script to run the Docker container for NPU debian build
 
 set -e
 
-IMAGE_NAME="xrt-debian-unstable-2"
-CONTAINER_NAME="xrt-upstream-dev"
+show_help() {
+    cat << EOF
+Usage: $0 [IMAGE_NAME] [CONTAINER_NAME]
+
+Run Docker container for NPU builds.
+
+Arguments:
+  IMAGE_NAME     Docker image name with tag (default: debuild-debian_unstable)
+  CONTAINER_NAME Name of contaioner to create (default: debuild-debian-dev)
+
+Options:
+  -h, --help     Show this help message
+
+Examples:
+  $0 debuild-u2404 debuild-u2404-dev
+  $0 debuild-debian_unstable debuild-debian-dev
+
+EOF
+    exit 0
+}
+
+IMAGE_NAME="debuild-debian_unstable"
+CONTAINER_NAME="debuild-debian-dev"
+
+# Parse arguments
+case "$1" in
+    -h|--help)
+        show_help
+        ;;
+    "")
+        # No arguments, use defaults
+        ;;
+    *)
+        IMAGE_NAME="$1"
+        if [[ -n "$2" ]]; then
+            CONTAINER_NAME="$2"
+        fi
+        ;;
+esac
 
 # Get the directory where this script is located (TheRock root)
 SCRIPT_DIR=$(readlink -f $(dirname ${BASH_SOURCE[0]}))
