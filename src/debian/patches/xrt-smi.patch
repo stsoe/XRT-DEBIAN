@@ -1,0 +1,151 @@
+diff --git a/src/xrt/XRT/src/runtime_src/core/common/detail/linux/xilinx_xrt.h b/src/xrt/XRT/src/runtime_src/core/common/detail/linux/xilinx_xrt.h
+index 51f06c50e..b035c5548 100644
+--- a/xrt/XRT/src/runtime_src/core/common/detail/linux/xilinx_xrt.h
++++ b/xrt/XRT/src/runtime_src/core/common/detail/linux/xilinx_xrt.h
+@@ -76,12 +76,12 @@ platform_repo_path()
+ 
+   // 2. XDG data path ($HOME/.local/share) is also a candidate
+   if (const char* xdg = std::getenv("XDG_DATA_HOME"); xdg && *xdg) {
+-    paths.push_back(sfs::path(xdg) / "xrt" / XRT_VERSION_STRING);
+     paths.push_back(sfs::path(xdg) / "xrt");
++    paths.push_back(sfs::path(xdg) / "xrt" / XRT_VERSION_STRING);
+   }
+   else if (const char* home = std::getenv("HOME"); home && *home) {
+-    paths.push_back(sfs::path(home) / ".local/share/xrt" / XRT_VERSION_STRING);
+     paths.push_back(sfs::path(home) / ".local/share/xrt");
++    paths.push_back(sfs::path(home) / ".local/share/xrt" / XRT_VERSION_STRING);
+   }
+ 
+   return paths;
+diff --git a/src/xrt/XRT/src/runtime_src/core/common/message.cpp b/src/xrt/XRT/src/runtime_src/core/common/message.cpp
+index a9c10368c..5b39d5b88 100644
+--- a/xrt/XRT/src/runtime_src/core/common/message.cpp
++++ b/xrt/XRT/src/runtime_src/core/common/message.cpp
+@@ -178,9 +178,16 @@ file_dispatch(const std::string &file)
+ {
+   handle.open(file.c_str());
+   handle << "XRT build version: " << xrt_build_version << "\n";
+-  handle << "Build hash: " << xrt_build_version_hash << "\n";
+-  handle << "Build date: " << xrt_build_version_date << "\n";
+-  handle << "Git branch: " << xrt_build_version_branch<< "\n";
++
++  if (strlen(xrt_build_version_hash))
++    handle << "Build hash: " << xrt_build_version_hash << "\n";
++
++  if (strlen(xrt_build_version_date))
++    handle << "Build date: " << xrt_build_version_date << "\n";
++
++  if (strlen(xrt_build_version_branch))
++    handle << "Git branch: " << xrt_build_version_branch<< "\n";
++
+   handle << "[" << xrt_core::timestamp() << "]" << "\n";
+   handle << "PID: " << xrt_core::utils::get_pid() << "\n";
+   handle << "UID: " << get_userid() << "\n";
+@@ -208,9 +215,16 @@ console_dispatch::
+ console_dispatch()
+ {
+   std::cerr << "XRT build version: " << xrt_build_version << "\n";
+-  std::cerr << "Build hash: " << xrt_build_version_hash << "\n";
+-  std::cerr << "Build date: " << xrt_build_version_date << "\n";
+-  std::cerr << "Git branch: " << xrt_build_version_branch<< "\n";
++
++  if (strlen(xrt_build_version_hash))
++    std::cerr << "Build hash: " << xrt_build_version_hash << "\n";
++
++  if (strlen(xrt_build_version_date))
++    std::cerr << "Build date: " << xrt_build_version_date << "\n";
++
++  if (strlen(xrt_build_version_branch))
++    std::cerr << "Git branch: " << xrt_build_version_branch << "\n";
++
+   std::cerr << "PID: " << xrt_core::utils::get_pid() << "\n";
+   std::cerr << "UID: " << get_userid() << "\n";
+   std::cerr << "[" << xrt_core::timestamp() << "]\n";
+diff --git a/src/xrt/XRT/src/runtime_src/core/tools/common/XBUtilities.cpp b/src/xrt/XRT/src/runtime_src/core/tools/common/XBUtilities.cpp
+index 5655ada83..710d36a3d 100644
+--- a/xrt/XRT/src/runtime_src/core/tools/common/XBUtilities.cpp
++++ b/xrt/XRT/src/runtime_src/core/tools/common/XBUtilities.cpp
+@@ -16,6 +16,8 @@
+ #include "common/smi.h"
+ #include "common/module_loader.h"
+ 
++#include "xrt/detail/version.h"
++
+ // 3rd Party Library - Include Files
+ #include <boost/algorithm/string/split.hpp>
+ #include <boost/format.hpp>
+@@ -23,11 +25,10 @@
+ #include <boost/tokenizer.hpp>
+ 
+ // System - Include Files
++#include <filesystem>
+ #include <iostream>
+ #include <map>
+ #include <regex>
+-#include <filesystem>
+-
+ 
+ #ifdef _WIN32
+ 
+@@ -840,17 +841,46 @@ std::unique_ptr<xrt_core::archive>
+ XBUtilities::
+ open_archive(const xrt_core::device* device)
+ {
+-  std::unique_ptr<xrt_core::archive> archive;
+-  
++  // Archives only applicable to Ryzen devices
++  if (xrt_core::device_query<xrt_core::query::device_class>(device) == xrt_core::query::device_class::type::alveo)
++    return nullptr;
++
++  std::string archive_path = xrt_core::device_query<xrt_core::query::archive_path>(device);
++
+   try {
+-    std::string archive_path = xrt_core::device_query<xrt_core::query::archive_path>(device);
+     auto full_archive_path = xrt_core::environment::platform_path(archive_path).string();
+-    archive = std::make_unique<xrt_core::archive>(full_archive_path);
+-  } catch (const std::exception& /*e*/) {
+-    // Continue without archive - this is not a fatal error
++    return std::make_unique<xrt_core::archive>(full_archive_path);
++  }
++  catch (const std::exception&) {
++    // Extract platform and archive name from "<path>/xrt_smi_<pfm>.a"
++    constexpr std::string_view prefix = "xrt_smi_";
++    constexpr std::string_view suffix = ".a";
++    auto pos = archive_path.find(prefix); // start of xrt_smi_<pfm>.a
++    if (pos == std::string::npos)
++      throw; // rethrow
++
++    // e.g. xrt_smi_<pfm>.a
++    auto archive = archive_path.substr(pos);
++
++    pos += prefix.size();                 // start of platform "strx.a"
++    auto end = archive_path.find(suffix); // end of platform ".a"
++    if (end == std::string::npos || end < pos)
++      throw; // rethrow
++
++    // Extract "strx", "phx" ...
++    auto pfm = archive_path.substr(pos, end - pos);
++    auto install_path = xrt_core::environment::platform_repo_paths().back().string();
++    auto msg = boost::str(boost::format(
++      "Archive not found: %s\n"
++      "Download manually from:\n"
++      "  https://raw.githubusercontent.com/Xilinx/VTD/%s/archive/%s/%s\n"
++      "And place it in: %s/%s")
++      % archive_path
++      % xrt_build_version % pfm % archive
++      % install_path % archive_path);
++
++    throw std::runtime_error(msg);
+   }
+-  
+-  return archive;
+ }
+ 
+ // Helper function to determine if hardware type is STRX or NPU3
+@@ -876,4 +906,4 @@ is_strix_hardware(xrt_core::smi::smi_hardware_config::hardware_type hw_type)
+     default:
+       throw std::runtime_error("Unsupported hardware type");
+   }
+-}
+\ No newline at end of file
++}
