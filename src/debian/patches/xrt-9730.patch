@@ -1,0 +1,12 @@
+diff --git a/src/runtime_src/core/common/message.cpp b/src/runtime_src/core/common/message.cpp
+index 5b39d5b88..e16254dc4 100644
+--- a/xrt/XRT/src/runtime_src/core/common/message.cpp
++++ b/xrt/XRT/src/runtime_src/core/common/message.cpp
+@@ -16,6 +16,7 @@
+ #include <mutex>
+ #include <algorithm>
+ #include <cstdarg>
++#include <cstring>
+ #include <climits>
+ #ifdef __linux__
+ # include <syslog.h>

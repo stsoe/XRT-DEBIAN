@@ -5,3 +5,8 @@ tracer.patch
 hip2.patch
 xrt-smi.patch
 hip3.patch
+xrt-9660.patch
+xrt-9730.patch
+xrt-9731.patch
+xrt-9738.patch
+xdna-1255.patch

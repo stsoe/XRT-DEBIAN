@@ -1,0 +1,85 @@
+diff --git a/src/runtime_src/core/common/runner/main.cpp b/src/runtime_src/core/common/runner/main.cpp
+index 19bbc381d..a80bf06c3 100644
+--- a/xrt/XRT/src/runtime_src/core/common/runner/main.cpp
++++ b/xrt/XRT/src/runtime_src/core/common/runner/main.cpp
+@@ -43,7 +43,18 @@
+ #include "core/common/time.h"
+ #include "core/common/runner/runner.h"
+ 
++#if defined(__GNUC__) && (__GNUC__ >= 16)
++// GCC 16 tightened the -Warray-bounds family and made it catch more
++// patterns in libstdc++ internals, especially around std::shared_ptr
++// and std::allocator‑backed objects. The diagnostic is spurious
++// (false‑positive) in this case.
++# pragma GCC diagnostic push
++# pragma GCC diagnostic ignored "-Warray-bounds"
++#endif
+ #include "core/common/json/nlohmann/json.hpp"
++#if defined(__GNUC__) && (__GNUC__ >= 16)
++# pragma GCC diagnostic pop
++#endif
+ 
+ #include <atomic>
+ #include <climits>
+@@ -67,6 +78,7 @@
+ # include <sys/resource.h>
+ #endif
+ 
++
+ using json = nlohmann::json;
+ namespace sfs = std::filesystem;
+ 
+diff --git a/src/runtime_src/core/common/scheduler.cpp b/src/runtime_src/core/common/scheduler.cpp
+index 256930d48..c51ba947f 100644
+--- a/xrt/XRT/src/runtime_src/core/common/scheduler.cpp
++++ b/xrt/XRT/src/runtime_src/core/common/scheduler.cpp
+@@ -25,6 +25,14 @@
+ # pragma warning( disable : 4244 4245 4267 4996)
+ #endif
+ 
++#if defined(__GNUC__) && (__GNUC__ >= 16)
++// GCC 16 tightened the -Warray-bounds family and made it catch more
++// patterns in libstdc++ internals, especially around std::shared_ptr
++// and std::allocator‑backed objects. The diagnostic is spurious
++// (false‑positive) in this case.
++# pragma GCC diagnostic ignored "-Warray-bounds"
++#endif
++
+ // This is interim, must be consolidated with runtime_src/xrt/scheduler
+ // when XRT C++ code is refactored.
+ 
+diff --git a/src/runtime_src/hip/api/hip_device.cpp b/src/runtime_src/hip/api/hip_device.cpp
+index e4dbd8e7f..363a7d1f5 100644
+--- a/xrt/XRT/src/runtime_src/hip/api/hip_device.cpp
++++ b/xrt/XRT/src/runtime_src/hip/api/hip_device.cpp
+@@ -136,7 +136,7 @@ hip_get_device_properties(hipDeviceProp_t* props, hipDevice_t device)
+   // Query device name using rom_vbnv
+   // Copy device name to device_props.name, ensuring no buffer overflow
+   auto name_str = (xrt_core::device_query<xrt_core::query::rom_vbnv>(device_handle));
+-  std::strncpy(device_props.name, name_str.c_str(), sizeof(device_props.name));
++  std::strncpy(device_props.name, name_str.c_str(), sizeof(device_props.name) - 1);
+   device_props.name[sizeof(device_props.name) - 1] = '\0';
+   // Extract and assign PCI domain, bus, and device IDs from the queried PCIe BDF tuple
+   device_props.pciDomainID = std::get<0>(uuid);
+diff --git a/src/runtime_src/xdp/profile/plugin/aie_trace/client/aie_trace.cpp b/src/runtime_src/xdp/profile/plugin/aie_trace/client/aie_trace.cpp
+index 02780d114..b77ead582 100644
+--- a/xrt/XRT/src/runtime_src/xdp/profile/plugin/aie_trace/client/aie_trace.cpp
++++ b/xrt/XRT/src/runtime_src/xdp/profile/plugin/aie_trace/client/aie_trace.cpp
+@@ -811,7 +811,7 @@ namespace xdp {
+       // 2. Configure Memory Trace Events
+       //
+       // NOTE: this is applicable for memory modules in AIE tiles or memory tiles
+-      uint32_t coreToMemBcMask = 0;
++      //uint32_t coreToMemBcMask = 0;
+       if ((type == module_type::core) || (type == module_type::mem_tile)) {
+         xrt_core::message::send(severity_level::info, "XRT", "Configuring Memory Trace Events");
+ 
+@@ -959,7 +959,7 @@ namespace xdp {
+             if (XAie_TraceEvent(&aieDevInst, loc, XAIE_MEM_MOD, broadcastEvents[bcIndex++], i) != XAIE_OK)
+               break;
+           
+-            coreToMemBcMask |= (0x1 << bcId);
++            //coreToMemBcMask |= (0x1 << bcId);
+           } 
+           else {
+             if (XAie_TraceEvent(&aieDevInst, loc, XAIE_MEM_MOD, memoryEvents[i], i) != XAIE_OK)
