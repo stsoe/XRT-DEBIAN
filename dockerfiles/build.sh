@@ -9,16 +9,10 @@ SCRIPT_DIR=$(readlink -f $(dirname ${BASH_SOURCE[0]}))
 ROOT_DIR=$(readlink -f $SCRIPT_DIR/..)
 HERE=$PWD
 
+cd $ROOT_DIR/src
+
 # Update submodules, can only done as user
 # git submodule update --init --recursive
-
-# Install build dependencies declared in the package's debian/control
-cd $ROOT_DIR/src
-apt-get update
-apt-get build-dep -y xrt
-
-# Doesn't seem to come in build-dep, so install manually
-apt-get install libamdhip64-dev appstream -y
 
 # Cleanup from previous builds
 /bin/rm -rf /tmp/upstream
@@ -59,6 +53,13 @@ QUILT_PATCHES=debian/patches quilt push -a
 
 # Copy back to host, can only be done as user
 # cp /tmp/upstream/xrt-src.tar <dst>
+
+# Install build dependencies declared in the package's debian/control
+apt-get update
+mk-build-deps --install --tool='apt-get -y' debian/control
+
+# Doesn't seem to come in build-dep, so install manually
+apt-get install libamdhip64-dev appstream -y
 
 # Build
 debuild -us -uc
