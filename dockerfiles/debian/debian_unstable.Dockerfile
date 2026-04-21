@@ -32,7 +32,8 @@ apt-get install -y \
     dh-python \
     help2man \
     systemtap-sdt-dev \
-    quilt
+    quilt \
+    ccache
 
 # Configure git to trust all directories (needed for version detection in containers)
 RUN git config --global --add safe.directory '*'

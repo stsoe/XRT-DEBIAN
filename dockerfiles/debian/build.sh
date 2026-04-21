@@ -6,7 +6,7 @@
 
 # Get the directory where this script is located (TheRock root)
 SCRIPT_DIR=$(readlink -f $(dirname ${BASH_SOURCE[0]}))
-ROOT_DIR=$(readlink -f $SCRIPT_DIR/..)
+ROOT_DIR=$(readlink -f $SCRIPT_DIR/../..)
 HERE=$PWD
 
 # Update submodules, can only done as user
@@ -14,11 +14,6 @@ HERE=$PWD
 
 # Install build dependencies declared in the package's debian/control
 cd $ROOT_DIR/src
-apt-get update
-apt-get build-dep -y xrt
-
-# Doesn't seem to come in build-dep, so install manually
-apt-get install libamdhip64-dev appstream -y
 
 # Cleanup from previous builds
 /bin/rm -rf /tmp/upstream
@@ -40,7 +35,7 @@ find . -type f -name .git -exec /bin/rm -rf {} \;
 find . -type f -name .gitattributes -exec /bin/rm -rf {} \;
 find . -type f -name .gitignore -exec /bin/rm -rf {} \;
 find . -type f -name .gitmodules -exec /bin/rm -rf {} \;
-find . -type d -name elf_examples -exec /bin/rm -rf {} \;
+find . -depth -type d -name elf_examples -exec /bin/rm -rf {} +
 find . -type f -name usertest -exec /bin/rm -rf {} \;
 find . -type f -name \*.elf -exec /bin/rm {} \;
 find . -type f -name \*.a -exec /bin/rm {} \;
@@ -60,5 +55,21 @@ QUILT_PATCHES=debian/patches quilt push -a
 # Copy back to host, can only be done as user
 # cp /tmp/upstream/xrt-src.tar <dst>
 
+# Install build dependencies declared in the package's debian/control
+apt-get update
+mk-build-deps --install --tool='apt-get -y' debian/control
+
+# Doesn't seem to come in build-dep, so install manually
+apt-get install libamdhip64-dev appstream -y
+
+# ccache with debuild doesn't appear to work
+#export CCACHE_DIR="/scratch/ccache/debuild"
+#mkdir -p $CCACHE_DIR
+#export CC="ccache cc"
+#export CXX="ccache c++"
+
 # Build
 debuild -us -uc
+
+#ccache --show-stats || true
+
