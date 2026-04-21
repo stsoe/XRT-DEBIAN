@@ -25,6 +25,7 @@ rsync -avz . /tmp/upstream/build/
 
 # Filter
 cd /tmp/upstream/build
+/bin/rm -rf fedora
 /bin/rm -rf xdna/xdna-driver/xrt
 /bin/rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/ELFIO
 /bin/rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/lib/aie-rt
