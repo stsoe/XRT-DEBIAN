@@ -12,19 +12,17 @@
 %global debug_package %{nil}
 
 Name:           xrt
-Epoch:          1
+Epoch:          0
 Version:        2.21.75
 Release:        1%{?dist}
 Summary:        Xilinx / AMD FPGA and ACAP runtime (XRT), Debian-aligned subpackages
 
 License:        Apache-2.0 AND GPL-2.0-only AND GPL-2.0-or-later
-URL:            https://www.xilinx.com/products/design-tools/vitis/xrt.html
-# VCS: https://github.com/Xilinx/XRT — this mono-repo also bundles xdna-driver.
+URL:            https://github.com/Xilinx/XRT
 
-Source0:        %{name}-%{version}.tar.xz
+Source0:       %{name}-%{version}.tar.xz
 
-# Architectures aligned with debian/control (lib* and python are arm64+amd64;
-# DKMS package is amd64 only in Debian → x86_64 only here).
+# Architectures aligned with debian/control (lib* and python are arm64+amd64
 ExclusiveArch:  aarch64 x86_64
 
 BuildRequires:  cmake >= 3.16
@@ -58,7 +56,7 @@ BuildRequires:  rocm-hip-devel
 %description
 This source package builds the same binary package set as the Debian
 packaging under src/debian: runtime libraries split for core / NPU / Alveo,
-Python bindings, development files, utilities, and XOCL DKMS sources.
+Python bindings, development files, and utilities.
 
 %package -n libxrt2
 Summary:        Xilinx Runtime (XRT) - runtime libraries
@@ -89,14 +87,14 @@ Requires:       libxrt2%{?_isa} = %{epoch}:%{version}-%{release}
 %description -n python3-xrt
 Python bindings for XRT (Debian python3-xrt).
 
-%package -n libxrt-dev
+%package -n libxrt-devel
 Summary:        Xilinx Runtime (XRT) - development files
 Requires:       python3-xrt%{?_isa} = %{epoch}:%{version}-%{release}
 Requires:       libxrt2%{?_isa} = %{epoch}:%{version}-%{release}
 Requires:       libxrt-npu2%{?_isa} = %{epoch}:%{version}-%{release}
 Requires:       libxrt-alveo2%{?_isa} = %{epoch}:%{version}-%{release}
 
-%description -n libxrt-dev
+%description -n libxrt-devel
 Headers, CMake package files, pkg-config files, and static libraries
 (Debian libxrt-dev).
 
@@ -123,19 +121,6 @@ Requires:       libxrt-alveo2%{?_isa} = %{epoch}:%{version}-%{release}
 %description -n libxrt-utils-alveo
 Alveo-specific utilities (Debian libxrt-utils-alveo).
 
-%package -n xrt-xocl-dkms
-Summary:        Xilinx Runtime (XRT) - XOCL kernel driver (DKMS)
-Requires:       dkms
-Requires:       gcc
-Requires:       make
-Requires:       kernel-devel
-ExclusiveArch:  x86_64
-
-%description -n xrt-xocl-dkms
-DKMS sources and metadata for the XOCL Linux kernel drivers (Debian
-xrt-xocl-dkms). This subpackage is restricted to x86_64 to match the
-Debian Architecture field.
-
 %prep
 %setup -q -n %{name}-%{version}
 
@@ -148,8 +133,17 @@ if [ -f debian/patches/series ]; then
     echo "PATCH: debian/patches/${line}"
     /usr/bin/patch -p1 --fuzz=0 --silent -i debian/patches/${line}
   done < debian/patches/series
-else
-  echo "WARNING: debian/patches/series missing; skipping patches" >&2
+fi
+
+# Apply patches specific to fedora
+if [ -f fedora/patches/series ]; then
+  while IFS= read -r line || [ -n "$line" ]; do
+    case "$line" in
+      ''|\#*) continue ;;
+    esac
+    echo "PATCH: fedora/patches/${line}"
+    /usr/bin/patch -p1 --fuzz=0 --silent -i fedora/patches/${line}
+  done < fedora/patches/series
 fi
 
 %build
@@ -160,7 +154,8 @@ fi
   -DXRT_ALVEO=1 \
   -DCMAKE_BUILD_RPATH_USE_ORIGIN=ON \
   -DXRT_ENABLE_HIP=ON \
-  -DXRT_ENABLE_TRACER=OFF
+  -DXRT_ENABLE_TRACER=OFF \
+  -DXRT_ENABLE_DKMS=OFF
 
 %cmake_build
 
@@ -169,13 +164,6 @@ fi
 
 # --- Post-install steps from debian/rules (override_dh_auto_install) ---
 # (Alveo emulation shlibs stay in %%{_libdir}; split vs libxrt2 is by %%files only.)
-
-# udev rules into DKMS package tree (same files as debian/rules).
-install -d %{buildroot}%{_prefix}/lib/udev/rules.d
-install -m 0644 xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl/mgmtpf/99-xclmgmt.rules \
-  %{buildroot}%{_prefix}/lib/udev/rules.d/
-install -m 0644 xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl/userpf/99-xocl.rules \
-  %{buildroot}%{_prefix}/lib/udev/rules.d/
 
 # xbtop: CMake installs the package under %%{_prefix}/python/ (see XRT_INSTALL_PYTHON_DIR
 # in xrtVariables.cmake). Match debian/python3-xrt.install by placing _xbtop next to pyxrt.
@@ -200,10 +188,6 @@ if [ -e %{buildroot}%{_prefix}/local/bin/xbflash2 ]; then
   mv -f %{buildroot}%{_prefix}/local/bin/xbflash2 %{buildroot}%{_bindir}/xbflash2
 fi
 rmdir %{buildroot}%{_prefix}/local/bin %{buildroot}%{_prefix}/local 2>/dev/null || true
-
-# AppStream metainfo (debian/xrt-xocl-dkms.install).
-install -d %{buildroot}%{_metainfodir}
-install -m 0644 debian/io.xilinx.xrt-xocl-dkms.metainfo.xml %{buildroot}%{_metainfodir}/
 
 # Man pages shipped by Debian packaging (not always installed by upstream CMake).
 install -d %{buildroot}%{_mandir}/man1
@@ -255,8 +239,6 @@ rm -rf %{buildroot}/usr/local/bin/xbflash
 rm -rf %{buildroot}/usr/share/completions/*
 rm -rf %{buildroot}/usr/share/doc/CHANGELOG.rst
 rm -rf %{buildroot}/usr/share/doc/CONTRIBUTING.rst
-#rm -rf %{buildroot}/usr/src/xrt-aws*
-find %{buildroot}/usr/src -mindepth 1 -maxdepth 1 -type f -name 'xrt-aws*' -delete
 rm -rf %{buildroot}/usr/version.json
 
 # not-installed also lists these at the fake install root; remove if present.
@@ -271,30 +253,6 @@ rm -rf %{buildroot}/runtime_src
 # debian/rules stages an install before tests; %%cmake_install already ran.
 # Uncomment when CTest is reliable in mock/Koji:
 # %ctest
-
-%post -n xrt-xocl-dkms
-if command -v dkms >/dev/null 2>&1; then
-  for d in /usr/src/xrt-*; do
-    [ -f "$d/dkms.conf" ] || continue
-    mod="$(awk -F= '/^PACKAGE_NAME=/{gsub(/\"/,"",$2);print $2;exit}' "$d/dkms.conf")"
-    ver="$(awk -F= '/^PACKAGE_VERSION=/{gsub(/\"/,"",$2);print $2;exit}' "$d/dkms.conf")"
-    dkms add -m "$mod" -v "$ver" --rpm_safe_upgrade 2>/dev/null || :
-    dkms build -m "$mod" -v "$ver" 2>/dev/null || :
-    dkms install -m "$mod" -v "$ver" 2>/dev/null || :
-    break
-  done
-fi
-
-%preun -n xrt-xocl-dkms
-if [ "$1" -eq 0 ] && command -v dkms >/dev/null 2>&1; then
-  for d in /usr/src/xrt-*; do
-    [ -f "$d/dkms.conf" ] || continue
-    mod="$(awk -F= '/^PACKAGE_NAME=/{gsub(/\"/,"",$2);print $2;exit}' "$d/dkms.conf")"
-    ver="$(awk -F= '/^PACKAGE_VERSION=/{gsub(/\"/,"",$2);print $2;exit}' "$d/dkms.conf")"
-    dkms remove -m "$mod" -v "$ver" --all --rpm_safe_upgrade 2>/dev/null || :
-    break
-  done
-fi
 
 %files
 %license xrt/XRT/LICENSE
@@ -325,7 +283,7 @@ fi
 %{python3_sitearch}/_xbtop/
 %{_bindir}/xbtop
 
-%files -n libxrt-dev
+%files -n libxrt-devel
 %{_includedir}/aiebu/*
 %{_includedir}/xrt/*
 %{_includedir}/CL/*
@@ -360,12 +318,8 @@ fi
 %{_mandir}/man1/xbmgmt.1*
 %{_datadir}/bash-completion/completions/xbmgmt2
 
-%files -n xrt-xocl-dkms
-/usr/src/xrt-*
-%{_metainfodir}/io.xilinx.xrt-xocl-dkms.metainfo.xml
-%{_prefix}/lib/udev/rules.d/99-xclmgmt.rules
-%{_prefix}/lib/udev/rules.d/99-xocl.rules
-
 %changelog
+* Wed Apr 22 2026 XRT-DEBIAN Packaging <packaging@localhost> - 1:2.21.75-1
+- Remove DKMS packaging
 * Mon Apr 20 2026 XRT-DEBIAN Packaging <packaging@localhost> - 1:2.21.75-1
 - Initial Fedora spec mirroring src/debian binary package split.
