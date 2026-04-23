@@ -1,0 +1,217 @@
+diff --git a/src/CMake/settings.cmake b/src/CMake/settings.cmake
+index 35d45a01f..9157f42c4 100644
+--- a/xrt/XRT/src/CMake/settings.cmake
++++ b/xrt/XRT/src/CMake/settings.cmake
+@@ -12,6 +12,13 @@ endif()
+ message("-- Host system processor is ${CMAKE_HOST_SYSTEM_PROCESSOR}")
+ message("-- Target system processor is ${CMAKE_SYSTEM_PROCESSOR}")
+ 
++# Move to options.cmake
++# Option to enable/disable adding static libraries to xrt-target.cmake
++option(XRT_INSTALL_STATIC_LIBRARY "Enable CMake static library targets" ON)
++if (XRT_YOCTO)
++  set(XRT_INSTALL_STATIC_LIBRARY OFF)
++endif()                       
++
+ # Indicate that we are building XRT
+ add_compile_definitions("XRT_BUILD")
+ 
+diff --git a/src/runtime_src/core/common/CMakeLists.txt b/src/runtime_src/core/common/CMakeLists.txt
+index e2e45cfb8..61565c4ff 100644
+--- a/xrt/XRT/src/runtime_src/core/common/CMakeLists.txt
++++ b/xrt/XRT/src/runtime_src/core/common/CMakeLists.txt
+@@ -17,6 +17,7 @@ elseif (NOT XRT_EDGE)
+   set(AIEBU_COMPONENT ${XRT_BASE_COMPONENT})
+   set(AIEBU_DEV_COMPONENT ${XRT_BASE_DEV_COMPONENT})
+   set(AIEBU_UPSTREAM ${XRT_UPSTREAM})
++  set(AIEBU_INSTALL_STATIC_LIBRARY ${XRT_INSTALL_STATIC_LIBRARY})
+ 
+   # AIEBU should use XRT's version of ELFIO
+   set(AIEBU_ELFIO_SRC_DIR ${XRT_SOURCE_DIR}/runtime_src/core/common/elf)
+@@ -161,12 +162,8 @@ install(TARGETS xrt_coreutil
+   LIBRARY DESTINATION ${XRT_INSTALL_LIB_DIR} COMPONENT ${XRT_BASE_COMPONENT} NAMELINK_COMPONENT ${XRT_BASE_DEV_COMPONENT}
+   ARCHIVE DESTINATION ${XRT_INSTALL_LIB_DIR} COMPONENT ${XRT_BASE_DEV_COMPONENT})
+ 
+-# Install static library - exclude from xrt-targets export in yocto builds
+-# to avoid find_package(XRT) failures when static libs are not in sysroot
+-if(XRT_YOCTO)
+-  install(TARGETS xrt_coreutil_static
+-    ARCHIVE DESTINATION ${XRT_INSTALL_LIB_DIR} COMPONENT ${XRT_BASE_DEV_COMPONENT})
+-else()
++# Enable install of static library iff requested
++if(XRT_INSTALL_STATIC_LIBRARY)
+   install(TARGETS xrt_coreutil_static
+     EXPORT xrt-targets
+     ARCHIVE DESTINATION ${XRT_INSTALL_LIB_DIR} COMPONENT ${XRT_BASE_DEV_COMPONENT})
+Submodule src/runtime_src/core/common/aiebu contains modified content
+diff --git a/src/runtime_src/core/pcie/emulation/hw_emu/CMakeLists.txt b/src/runtime_src/core/pcie/emulation/hw_emu/CMakeLists.txt
+index af0a6c5a6..176af864f 100644
+--- a/xrt/XRT/src/runtime_src/core/pcie/emulation/hw_emu/CMakeLists.txt
++++ b/xrt/XRT/src/runtime_src/core/pcie/emulation/hw_emu/CMakeLists.txt
+@@ -64,10 +64,16 @@ target_link_libraries(xrt_hwemu_static
+   uuid
+   )
+ 
+-install (TARGETS xrt_hwemu xrt_hwemu_static
++install (TARGETS xrt_hwemu
+   EXPORT xrt-targets
+   RUNTIME DESTINATION ${XRT_INSTALL_BIN_DIR} COMPONENT ${XRT_COMPONENT}
+   LIBRARY DESTINATION ${XRT_INSTALL_LIB_DIR} COMPONENT ${XRT_COMPONENT} NAMELINK_COMPONENT ${XRT_DEV_COMPONENT}
+   ARCHIVE DESTINATION ${XRT_INSTALL_LIB_DIR} COMPONENT ${XRT_DEV_COMPONENT}
+ )
+ 
++# Enable install of static library iff requested
++if(XRT_INSTALL_STATIC_LIBRARY)
++  install(TARGETS xrt_hwemu_static
++    EXPORT xrt-targets
++    ARCHIVE DESTINATION ${XRT_INSTALL_LIB_DIR} COMPONENT ${XRT_DEV_COMPONENT})
++endif()
+diff --git a/src/runtime_src/core/pcie/emulation/sw_emu/CMakeLists.txt b/src/runtime_src/core/pcie/emulation/sw_emu/CMakeLists.txt
+index 8dd388098..8ea4553cc 100644
+--- a/xrt/XRT/src/runtime_src/core/pcie/emulation/sw_emu/CMakeLists.txt
++++ b/xrt/XRT/src/runtime_src/core/pcie/emulation/sw_emu/CMakeLists.txt
+@@ -58,9 +58,16 @@ target_link_libraries(xrt_swemu_static
+   uuid
+   )
+ 
+-install (TARGETS xrt_swemu xrt_swemu_static
++install (TARGETS xrt_swemu
+   EXPORT xrt-targets
+   RUNTIME DESTINATION ${XRT_INSTALL_BIN_DIR} COMPONENT ${XRT_COMPONENT}
+   LIBRARY DESTINATION ${XRT_INSTALL_LIB_DIR} COMPONENT ${XRT_COMPONENT} NAMELINK_COMPONENT ${XRT_DEV_COMPONENT}
+   ARCHIVE DESTINATION ${XRT_INSTALL_LIB_DIR} COMPONENT ${XRT_DEV_COMPONENT}
+ )
++
++# Enable install of static library iff requested
++if(XRT_INSTALL_STATIC_LIBRARY)
++  install(TARGETS xrt_swemu_static
++    EXPORT xrt-targets
++    ARCHIVE DESTINATION ${XRT_INSTALL_LIB_DIR} COMPONENT ${XRT_DEV_COMPONENT})
++endif()
+diff --git a/src/runtime_src/core/pcie/linux/CMakeLists.txt b/src/runtime_src/core/pcie/linux/CMakeLists.txt
+index 4afdde405..8a45f57d8 100644
+--- a/xrt/XRT/src/runtime_src/core/pcie/linux/CMakeLists.txt
++++ b/xrt/XRT/src/runtime_src/core/pcie/linux/CMakeLists.txt
+@@ -82,9 +82,16 @@ endif()
+ 
+ # Shim for Linux is installed in the base component as it is
+ # used by both Alveo and NPU components.   
+-install(TARGETS xrt_core xrt_core_static
++install(TARGETS xrt_core
+   EXPORT xrt-targets
+   RUNTIME DESTINATION ${XRT_INSTALL_BIN_DIR} COMPONENT ${XRT_BASE_COMPONENT}
+   LIBRARY DESTINATION ${XRT_INSTALL_LIB_DIR} COMPONENT ${XRT_BASE_COMPONENT} NAMELINK_COMPONENT ${XRT_BASE_DEV_COMPONENT}
+   ARCHIVE DESTINATION ${XRT_INSTALL_LIB_DIR} COMPONENT ${XRT_BASE_DEV_COMPONENT}
+ )
++
++# Enable install of static library iff requested
++if(XRT_INSTALL_STATIC_LIBRARY)
++  install(TARGETS xrt_core_static
++    EXPORT xrt-targets
++    ARCHIVE DESTINATION ${XRT_INSTALL_LIB_DIR} COMPONENT ${XRT_BASE_DEV_COMPONENT})
++endif()
+diff --git a/src/runtime_src/xocl/CMakeLists.txt b/src/runtime_src/xocl/CMakeLists.txt
+index 94ab783cf..4c1d9e6c2 100644
+--- a/xrt/XRT/src/runtime_src/xocl/CMakeLists.txt
++++ b/xrt/XRT/src/runtime_src/xocl/CMakeLists.txt
+@@ -101,12 +101,8 @@ install(TARGETS xilinxopencl
+   ARCHIVE DESTINATION ${XRT_INSTALL_LIB_DIR} COMPONENT ${XRT_BASE_DEV_COMPONENT}
+ )
+ 
+-# Install static library - exclude from xrt-targets export in yocto builds
+-# to avoid find_package(XRT) failures when static libs are not in sysroot
+-if(XRT_YOCTO)
+-  install(TARGETS xilinxopencl_static
+-    ARCHIVE DESTINATION ${XRT_INSTALL_LIB_DIR} COMPONENT ${XRT_BASE_DEV_COMPONENT})
+-else()
++# Enable install of static library iff requested
++if(XRT_INSTALL_STATIC_LIBRARY)
+   install(TARGETS xilinxopencl_static
+     EXPORT xrt-targets
+     ARCHIVE DESTINATION ${XRT_INSTALL_LIB_DIR} COMPONENT ${XRT_BASE_DEV_COMPONENT})
+diff --git a/src/runtime_src/xrt/CMakeLists.txt b/src/runtime_src/xrt/CMakeLists.txt
+index 2b6784854..d2a223187 100644
+--- a/xrt/XRT/src/runtime_src/xrt/CMakeLists.txt
++++ b/xrt/XRT/src/runtime_src/xrt/CMakeLists.txt
+@@ -74,12 +74,8 @@ install(TARGETS xrt++
+   ARCHIVE DESTINATION ${XRT_INSTALL_LIB_DIR} COMPONENT ${XRT_BASE_DEV_COMPONENT}
+ )
+ 
+-# Install static library - exclude from xrt-targets export in yocto builds
+-# to avoid find_package(XRT) failures when static libs are not in sysroot
+-if(XRT_YOCTO)
+-  install(TARGETS xrt++_static
+-    ARCHIVE DESTINATION ${XRT_INSTALL_LIB_DIR} COMPONENT ${XRT_BASE_DEV_COMPONENT})
+-else()
++# Enable install of static library iff requested
++if(XRT_INSTALL_STATIC_LIBRARY)
+   install(TARGETS xrt++_static
+     EXPORT xrt-targets
+     ARCHIVE DESTINATION ${XRT_INSTALL_LIB_DIR} COMPONENT ${XRT_BASE_DEV_COMPONENT})
+diff --git a/cmake/cpack.cmake b/cmake/cpack.cmake
+index 109ef2a..629d16e 100644
+--- a/xrt/XRT/src/runtime_src/core/common/aiebu/cmake/cpack.cmake
++++ b/xrt/XRT/src/runtime_src/core/common/aiebu/cmake/cpack.cmake
+@@ -9,5 +9,12 @@ set(CPACK_PACKAGE_CONTACT "runtimeca39d@amd.com")
+ set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "AMD XDNA binutils package")
+ set(CPACK_RESOURCE_FILE_LICENSE "${AIEBU_SOURCE_DIR}/LICENSE")
+ 
+-include(cmake/findpackage.cmake)
++# AIEBU currently installs only static library for client
++# linking and only if requested.  This doesn't scale too
++# well, if aiebu-targets is used differently this conditional
++# include must be revisted
++if(AIEBU_INSTALL_STATIC_LIBRARY)
++  include(cmake/findpackage.cmake)
++endif()
++
+ include(CPack)
+diff --git a/cmake/settings.cmake b/cmake/settings.cmake
+index b51f2b9..378beea 100644
+--- a/xrt/XRT/src/runtime_src/core/common/aiebu/cmake/settings.cmake
++++ b/xrt/XRT/src/runtime_src/core/common/aiebu/cmake/settings.cmake
+@@ -18,6 +18,9 @@ SET(AIEBU_VERSION_MINOR 0)
+ message("-- Host system processor is ${CMAKE_HOST_SYSTEM_PROCESSOR}")
+ message("-- Target system processor is ${CMAKE_SYSTEM_PROCESSOR}")
+ 
++option(AIEBU_INSTALL_STATIC_LIBRARY "Enable CMake static library targets" ON)
++message("-- AIEBU_INSTALL_STATIC_LIBRARY=${AIEBU_INSTALL_STATIC_LIBRARY}")
++
+ set(AIEBU_NATIVE_BUILD TRUE)
+ if (NOT ${CMAKE_SYSTEM_PROCESSOR} STREQUAL ${CMAKE_HOST_SYSTEM_PROCESSOR})
+   set(AIEBU_NATIVE_BUILD FALSE)
+diff --git a/src/cpp/CMakeLists.txt b/src/cpp/CMakeLists.txt
+index b5c7ad4..5efc038 100644
+--- a/xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/CMakeLists.txt
++++ b/xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/CMakeLists.txt
+@@ -103,16 +103,19 @@ else()
+   set_target_properties(aiebu_static PROPERTIES OUTPUT_NAME "aiebu")
+ endif()
+ 
+-install (TARGETS aiebu_static
+-  EXPORT aiebu-targets
+-  LIBRARY DESTINATION ${AIEBU_INSTALL_LIB_DIR} COMPONENT ${AIEBU_COMPONENT} NAMELINK_COMPONENT ${AIEBU_DEV_COMPONENT}
+-  ARCHIVE DESTINATION ${AIEBU_INSTALL_LIB_DIR} COMPONENT ${AIEBU_DEV_COMPONENT}
+-)
++# Enable install of static library iff requested
++if(AIEBU_INSTALL_STATIC_LIBRARY)
++  install (TARGETS aiebu_static
++    EXPORT aiebu-targets
++    LIBRARY DESTINATION ${AIEBU_INSTALL_LIB_DIR} COMPONENT ${AIEBU_COMPONENT} NAMELINK_COMPONENT ${AIEBU_DEV_COMPONENT}
++    ARCHIVE DESTINATION ${AIEBU_INSTALL_LIB_DIR} COMPONENT ${AIEBU_DEV_COMPONENT}
++  )
+ 
+-install(FILES
+-  include/aiebu/aiebu.h
+-  include/aiebu/aiebu_assembler.h
+-  include/aiebu/aiebu_error.h
+-  DESTINATION ${AIEBU_INSTALL_INCLUDE_DIR}/aiebu
+-  CONFIGURATIONS Debug Release COMPONENT ${AIEBU_DEV_COMPONENT}
++  install(FILES
++    include/aiebu/aiebu.h
++    include/aiebu/aiebu_assembler.h
++    include/aiebu/aiebu_error.h
++    DESTINATION ${AIEBU_INSTALL_INCLUDE_DIR}/aiebu
++    CONFIGURATIONS Debug Release COMPONENT ${AIEBU_DEV_COMPONENT}
+ )
++endif()

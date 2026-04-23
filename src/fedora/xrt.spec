@@ -7,7 +7,7 @@ Name:           xrt
 Epoch:          0
 Version:        2.21.75
 Release:        1%{?dist}
-Summary:        Xilinx / AMD FPGA and ACAP runtime (XRT)
+Summary:        AMD Xilinx FPGA and ACAP runtime (XRT)
 
 License:        Apache-2.0 AND GPL-2.0-only AND GPL-2.0-or-later
 URL:            https://github.com/Xilinx/XRT
@@ -48,20 +48,20 @@ This source package builds XRT runtime libraries split for core / NPU / Alveo,
 Python bindings, development files, and utilities.
 
 %package npu
-Summary:        Xilinx Runtime (XRT) NPU - runtime libraries
+Summary:        AMD Xilinx Runtime (XRT) NPU - runtime libraries
 
 %description npu
 Runtime shared libraries for the XRT NPU path.
 
 %package alveo
-Summary:        Xilinx Runtime (XRT) ALVEO - runtime libraries
+Summary:        AMD Xilinx Runtime (XRT) ALVEO - runtime libraries
 
 %description alveo
 Runtime shared libraries for the XRT Alveo path, including scheduling and
 (on x86_64) hardware/software emulation support.
 
 %package -n python3-xrt
-Summary:        Xilinx Runtime (XRT) - Python bindings
+Summary:        AMD Xilinx Runtime (XRT) - Python bindings
 Requires:       python3%{?_isa}
 Requires:       xrt%{?_isa} = %{epoch}:%{version}-%{release}
 
@@ -69,7 +69,7 @@ Requires:       xrt%{?_isa} = %{epoch}:%{version}-%{release}
 Python bindings for XRT.
 
 %package devel
-Summary:        Xilinx Runtime (XRT) - development files
+Summary:        AMD Xilinx Runtime (XRT) - development files
 Requires:       python3-xrt%{?_isa} = %{epoch}:%{version}-%{release}
 Requires:       xrt%{?_isa} = %{epoch}:%{version}-%{release}
 Requires:       npu%{?_isa} = %{epoch}:%{version}-%{release}
@@ -79,14 +79,14 @@ Requires:       alveo%{?_isa} = %{epoch}:%{version}-%{release}
 Headers, CMake package files, pkg-config files, and static libraries.
 
 %package utils
-Summary:        Xilinx Runtime (XRT) - utilities
+Summary:        AMD Xilinx Runtime (XRT) - utilities
 Requires:       python3%{?_isa}
 
 %description utils
 General-purpose XRT command-line tools.
 
 %package utils-npu
-Summary:        Xilinx Runtime (XRT) NPU - utilities
+Summary:        AMD Xilinx Runtime (XRT) NPU - utilities
 Requires:       utils%{?_isa} = %{epoch}:%{version}-%{release}
 Requires:       npu%{?_isa} = %{epoch}:%{version}-%{release}
 
@@ -94,7 +94,7 @@ Requires:       npu%{?_isa} = %{epoch}:%{version}-%{release}
 NPU-specific utilities.
 
 %package utils-alveo
-Summary:        Xilinx Runtime (XRT) ALVEO - utilities
+Summary:        AMD Xilinx Runtime (XRT) ALVEO - utilities
 Requires:       utils%{?_isa} = %{epoch}:%{version}-%{release}
 Requires:       alveo%{?_isa} = %{epoch}:%{version}-%{release}
 
@@ -134,7 +134,8 @@ fi
   -DCMAKE_BUILD_RPATH_USE_ORIGIN=ON \
   -DXRT_ENABLE_HIP=ON \
   -DXRT_ENABLE_TRACER=OFF \
-  -DXRT_ENABLE_DKMS=OFF
+  -DXRT_ENABLE_DKMS=OFF \
+  -DXRT_INSTALL_STATIC_LIBRARY=OFF
 
 %cmake_build
 
@@ -156,6 +157,13 @@ if [ -f %{buildroot}%{_prefix}/python/xbtop.py ]; then
 elif [ -f %{buildroot}%{python3_sitearch}/xbtop.py ]; then
   mv -f %{buildroot}%{python3_sitearch}/xbtop.py %{buildroot}%{_bindir}/xbtop
 fi
+
+# Fix permission of non-executable scripts
+for script in \
+    %{buildroot}%{_bindir}/xbtop \
+    %{buildroot}%{python3_sitearch}/_xbtop/*.py ; do
+  [[ -f "$script" ]] && chmod 755 "$script"
+done
 
 # CMake installs xbflash2 under %%{_prefix}/local/bin; ship as %%{_bindir}/xbflash2.
 if [ -e %{buildroot}%{_prefix}/local/bin/xbflash2 ]; then
@@ -249,12 +257,10 @@ rm -rf %{buildroot}/runtime_src
 %{_bindir}/xbtop
 
 %files devel
-%{_includedir}/aiebu/*
 %{_includedir}/xrt/*
 %{_includedir}/CL/*
 %{_includedir}/hip/*
 %{_libdir}/pkgconfig/*.pc
-%{_libdir}/*.a
 # Unversioned "namelink" symlinks only (matches *.so, not *.so.N[.M...] runtime SONAMEs).
 # Avoid listing each library: some (e.g. libxrt_driver_xdna) may have no .so link, only .so.*.
 %{_libdir}/*.so
@@ -284,7 +290,5 @@ rm -rf %{buildroot}/runtime_src
 %{_datadir}/bash-completion/completions/xbmgmt2
 
 %changelog
-* Wed Apr 22 2026 Fedora Packaging <stsoe@amd.com> - 1:2.21.75-1
-- Remove DKMS packaging, fix review comments
-* Mon Apr 20 2026 Fedora Packaging <stsoe@amd.com> - 1:2.21.75-1
+* Mon Apr 20 2026 Fedora Packaging <stsoe@amd.com> - 0:2.21.75-1
 - Initial Fedora spec mirroring src/debian binary package split.
