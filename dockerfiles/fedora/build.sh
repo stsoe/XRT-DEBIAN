@@ -74,6 +74,8 @@ mkdir -p $CCACHE_DIR
 export CC="ccache gcc"
 export CXX="ccache g++"
 rpmbuild -ba "${RPMTOPDIR}/SPECS/xrt.spec"
+# build without clean (prevese buildroot for inspection)
+#rpmbuild -bi "${RPMTOPDIR}/SPECS/xrt.spec"
 ccache --show-stats || true
 
 OUT="${OUT:-/tmp/upstream/rpm-artifacts}"

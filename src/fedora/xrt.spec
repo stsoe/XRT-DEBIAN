@@ -9,7 +9,7 @@ Version:        2.21.75
 Release:        1%{?dist}
 Summary:        AMD Xilinx FPGA and ACAP runtime (XRT)
 
-License:        Apache-2.0 AND GPL-2.0-only AND GPL-2.0-or-later
+License:        Apache-2.0 AND MIT AND MIT-Khronos-old
 URL:            https://github.com/Xilinx/XRT
 
 Source0:       %{name}-%{version}.tar.xz
@@ -26,7 +26,6 @@ BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(yaml-cpp)
-# Fedora rapidjson-devel provides pkgconfig(RapidJSON), not pkgconfig(rapidjson).
 BuildRequires:  pkgconfig(RapidJSON)
 BuildRequires:  pkgconfig(ocl-icd)
 BuildRequires:  opencl-headers
@@ -174,7 +173,7 @@ rmdir %{buildroot}%{_prefix}/local/bin %{buildroot}%{_prefix}/local 2>/dev/null 
 
 # Man pages shipped by Debian packaging (not always installed by upstream CMake).
 install -d %{buildroot}%{_mandir}/man1
-for m in xrt-replay.1 xclbinutil.1 aiebu-asm.1 aiebu-dump.1 xbflash2.1 xbflash.qspi.1 xbmgmt.1; do
+for m in xclbinutil.1 aiebu-asm.1 aiebu-dump.1 xbflash2.1 xbflash.qspi.1 xbmgmt.1; do
   if [ -f debian/man/"$m" ]; then
     install -m 0644 debian/man/"$m" %{buildroot}%{_mandir}/man1/
   fi
@@ -191,30 +190,25 @@ if [ -f %{buildroot}%{_datadir}/completions/xbmgmt-bash-completion ]; then
     %{buildroot}%{_datadir}/bash-completion/completions/xbmgmt2
 fi
 
-# not-installed: do not ship these upstream doc snippets in the packages.
-rm -f %{buildroot}%{_datadir}/doc/CHANGELOG.rst %{buildroot}%{_datadir}/doc/CONTRIBUTING.rst 2>/dev/null || :
-
 # ---------------------------------------------------------------------------
 # Match debian/not-installed: remove paths upstream installs but no subpackage
 # lists, so rpmbuild check-files does not fail on orphans.
 # (Run after copying completions out of %%{_datadir}/completions/.)
 # ---------------------------------------------------------------------------
 rm -rf %{buildroot}/bins
-find %{buildroot}/usr/bin -mindepth 1 -maxdepth 1 -type f -name '*.sh' -delete
-rm -rf %{buildroot}/usr/bin/mpd
-rm -rf %{buildroot}/usr/bin/msd
-find %{buildroot}/usr/etc -mindepth 1 -maxdepth 1 -type f -name '*.service' -delete
-rm -rf %{buildroot}/usr/etc/nagios-plugins
-find %{buildroot}/usr/include -mindepth 1 -maxdepth 1 -type f -name 'm*d_plugin.h' -delete
-find %{buildroot}/usr/%{_lib} -mindepth 1 -maxdepth 1 -type f -name 'libaws*.so*' -delete
-find %{buildroot}/usr/%{_lib} -mindepth 1 -maxdepth 1 -type f -name 'libazure*.so*' -delete
-find %{buildroot}/usr/%{_lib} -mindepth 1 -maxdepth 1 -type f -name 'libcontainer*.so*' -delete
-find %{buildroot}/usr/%{_lib} -mindepth 1 -maxdepth 1 -type f -name 'libsched*.so' -delete
-rm -rf %{buildroot}/usr/license/LICENSE
-rm -rf %{buildroot}/usr/local/bin/xbflash
-rm -rf %{buildroot}/usr/share/completions/*
-rm -rf %{buildroot}/usr/share/doc/CHANGELOG.rst
-rm -rf %{buildroot}/usr/share/doc/CONTRIBUTING.rst
+find %{buildroot}%{_bindir} -mindepth 1 -maxdepth 1 -type f -name '*.sh' -delete
+rm -rf %{buildroot}%{_bindir}/{mpd,msd}
+rm -rf %{buildroot}/usr/etc
+find %{buildroot}%{_includedir} -mindepth 1 -maxdepth 1 -name 'm*d_plugin.h' -delete
+find %{buildroot}%{_libdir} -mindepth 1 -maxdepth 1 -name 'libaws*.so*' -delete
+find %{buildroot}%{_libdir} -mindepth 1 -maxdepth 1 -name 'libazure*.so*' -delete
+find %{buildroot}%{_libdir} -mindepth 1 -maxdepth 1 -name 'libcontainer*.so*' -delete
+find %{buildroot}%{_libdir} -mindepth 1 -maxdepth 1 -name 'libsched*.so' -delete
+rm -rf %{buildroot}/usr/license
+rm -rf %{buildroot}/usr/share/doc
+rm -rf %{buildroot}/usr/local
+rm -rf %{buildroot}%{_datadir}/completions
+rm -rf %{buildroot}%{_datadir}/doc
 rm -rf %{buildroot}/usr/version.json
 
 # not-installed also lists these at the fake install root; remove if present.
@@ -231,16 +225,18 @@ rm -rf %{buildroot}/runtime_src
 
 %files
 %license xrt/XRT/LICENSE
+%license xrt/XRT/NOTICE
 %{_libdir}/libxilinxopencl.so.*
 %{_libdir}/libxrt++.so.*
 %{_libdir}/libxrt_core.so.*
 %{_libdir}/libxrt_coreutil.so.*
 %{_libdir}/libxrt_hip.so.*
-%{_datadir}/doc/NOTICE
 
 %files npu
 %{_libdir}/libxrt_driver_xdna.so.*
 %{_libdir}/libxdp*.so.*
+%dir %{_libdir}/xrt
+%dir %{_libdir}/xrt/module
 %{_libdir}/xrt/*/libxdp*.so.*
 
 %files alveo
@@ -257,20 +253,20 @@ rm -rf %{buildroot}/runtime_src
 %{_bindir}/xbtop
 
 %files devel
+%dir %{_includedir}/xrt
 %{_includedir}/xrt/*
 %{_includedir}/CL/*
+%dir %{_includedir}/hip
 %{_includedir}/hip/*
 %{_libdir}/pkgconfig/*.pc
-# Unversioned "namelink" symlinks only (matches *.so, not *.so.N[.M...] runtime SONAMEs).
-# Avoid listing each library: some (e.g. libxrt_driver_xdna) may have no .so link, only .so.*.
 %{_libdir}/*.so
-%{_datadir}/cmake/*
+%dir %{_datadir}/cmake/XRT
+%{_datadir}/cmake/XRT/*
 
 %files utils
 %{_bindir}/xrt-smi
 %{_bindir}/xclbinutil
 %{_sysconfdir}/OpenCL/vendors/*.icd
-%{_mandir}/man1/xrt-replay.1*
 %{_mandir}/man1/xclbinutil.1*
 %{_datadir}/bash-completion/completions/xrt-smi
 
