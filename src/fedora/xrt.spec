@@ -157,11 +157,13 @@ elif [ -f %{buildroot}%{python3_sitearch}/xbtop.py ]; then
   mv -f %{buildroot}%{python3_sitearch}/xbtop.py %{buildroot}%{_bindir}/xbtop
 fi
 
-# Fix permission of non-executable scripts
+# Fix permission of non-executable scripts (skip package __init__.py: not a script, keep 0644)
 for script in \
     %{buildroot}%{_bindir}/xbtop \
     %{buildroot}%{python3_sitearch}/_xbtop/*.py ; do
-  [[ -f "$script" ]] && chmod 755 "$script"
+  [[ -f "$script" ]] || continue
+  [[ "$(basename "$script")" == __init__.py ]] && chmod 0644 "$script" && continue
+  chmod 755 "$script"
 done
 
 # CMake installs xbflash2 under %%{_prefix}/local/bin; ship as %%{_bindir}/xbflash2.

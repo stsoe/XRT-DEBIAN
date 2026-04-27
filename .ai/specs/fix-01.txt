@@ -1,0 +1,511 @@
+Fedora review points out the following check list.
+I am not sure how to address these points as it relates the spec file src/fedora/xrt.spec.
+Please advise.
+
+
+This is a review *template*. Besides handling the [ ]-marked tests you are
+also supposed to fix the template before pasting into bugzilla:
+- Add issues you find to the list of issues on top. If there isn't such
+  a list, create one.
+- Add your own remarks to the template checks.
+- Add new lines marked [!] or [?] when you discover new things not
+  listed by fedora-review.
+- Change or remove any text in the template which is plain wrong. In this
+  case you could also file a bug against fedora-review
+- Remove the "[ ] Manual check required", you will not have any such lines
+  in what you paste.
+- Remove attachments which you deem not really useful (the rpmlint
+  ones are mandatory, though)
+- Remove this text
+
+
+
+Package Review
+==============
+
+Legend:
+[x] = Pass, [!] = Fail, [-] = Not applicable, [?] = Not evaluated
+[ ] = Manual review needed
+
+
+
+===== MUST items =====
+
+C/C++:
+[ ]: Package does not contain kernel modules.
+[ ]: Development (unversioned) .so files in -devel subpackage, if present.
+     Note: Unversioned so-files in private %_libdir subdirectory (see
+     attachment). Verify they are not in ld path.
+[x]: If your application is a C or C++ application you must list a
+     BuildRequires against gcc, gcc-c++ or clang.
+[x]: Header files in -devel subpackage, if present.
+[x]: ldconfig not called in %post and %postun for Fedora 28 and later.
+[x]: Package does not contain any libtool archives (.la)
+[x]: Package contains no static executables.
+[x]: Rpath absent or only used for internal libs.
+
+Generic:
+[ ]: Package successfully compiles and builds into binary rpms on at least
+     one supported primary architecture.
+     Note: Using prebuilt packages
+[ ]: Package is licensed with an open-source compatible license and meets
+     other legal requirements as defined in the legal section of Packaging
+     Guidelines.
+[ ]: License field in the package spec file matches the actual license.
+     Note: Checking patched sources after %prep for licenses. Licenses
+     found: "Apache License 2.0", "Unknown or generated", "Apache License
+     2.0 and/or GNU General Public License, Version 2 and/or MIT License",
+     "*No copyright* Apache License 2.0", "Apache License 2.0 and/or GNU
+     General Public License v2.0 or later [obsolete FSF postal address
+     (Temple Place)]", "Apache License 2.0 and/or GNU General Public
+     License, Version 2", "Khronos License", "MIT License", "*No copyright*
+     GNU General Public License, Version 2", "GNU General Public License,
+     Version 2", "*No copyright* MIT License", "BSD 3-Clause License",
+     "Apache License", "GNU General Public License v2.0 or later", "Apache
+     License 2.0 and/or MIT License", "Boost Software License 1.0", "GNU
+     General Public License v2.0 or later [obsolete FSF postal address
+     (Temple Place)]", "BSD 2-Clause License and/or GNU General Public
+     License v2.0 or later". 1072 files have unknown license. Detailed
+     output of licensecheck in /var/lib/copr-
+     rpmbuild/results/xrt/licensecheck.txt
+[ ]: License file installed when any subpackage combination is installed.
+[ ]: If the package is under multiple licenses, the licensing breakdown
+     must be documented in the spec.
+[ ]: Package must own all directories that it creates.
+     Note: Directories without known owners: /usr/include/CL,
+     /etc/OpenCL/vendors, /usr/lib64/python3.14, /etc/OpenCL,
+     /usr/lib64/python3.14/site-packages
+[ ]: %build honors applicable compiler flags or justifies otherwise.
+[ ]: Package contains no bundled libraries or specifies bundled libraries
+     with Provides: bundled(<libname>) if unbundling is not possible.
+[ ]: Changelog in prescribed format.
+[ ]: Sources contain only permissible code or content.
+[ ]: Package contains desktop file if it is a GUI application.
+[ ]: Development files must be in a -devel package
+[ ]: Package uses nothing in %doc for runtime.
+[ ]: Package consistently uses macros (instead of hard-coded directory
+     names).
+[ ]: Package is named according to the Package Naming Guidelines.
+[ ]: Package does not generate any conflict.
+[ ]: Package obeys FHS, except libexecdir and /usr/target.
+[ ]: If the package is a rename of another package, proper Obsoletes and
+     Provides are present.
+[ ]: Requires correct, justified where necessary.
+[ ]: Spec file is legible and written in American English.
+[ ]: Package contains systemd file(s) if in need.
+[ ]: Useful -debuginfo package or justification otherwise.
+[ ]: Package is not known to require an ExcludeArch tag.
+[ ]: Package complies to the Packaging Guidelines
+[x]: Package installs properly.
+[x]: Rpmlint is run on all rpms the build produces.
+     Note: There are rpmlint messages (see attachment).
+[x]: If (and only if) the source package includes the text of the
+     license(s) in its own file, then that file, containing the text of the
+     license(s) for the package is included in %license.
+[x]: The License field must be a valid SPDX expression.
+[x]: Package requires other packages for directories it uses.
+[x]: Package does not own files or directories owned by other packages.
+[x]: Package uses either %{buildroot} or $RPM_BUILD_ROOT
+[x]: Package does not run rm -rf %{buildroot} (or $RPM_BUILD_ROOT) at the
+     beginning of %install.
+[x]: Macros in Summary, %description expandable at SRPM build time.
+[x]: Dist tag is present.
+[x]: Package does not contain duplicates in %files.
+[x]: Permissions on files are set properly.
+[x]: Package must not depend on deprecated() packages.
+[x]: Package use %makeinstall only when make install DESTDIR=... doesn't
+     work.
+[x]: Package is named using only allowed ASCII characters.
+[x]: Package does not use a name that already exists.
+[x]: Package is not relocatable.
+[x]: Sources used to build the package match the upstream source, as
+     provided in the spec URL.
+[x]: Spec file name must match the spec package %{name}, in the format
+     %{name}.spec.
+[x]: File names are valid UTF-8.
+[x]: Large documentation must go in a -doc subpackage. Large could be size
+     (~1MB) or number of files.
+     Note: Documentation size is 0 bytes in 0 files.
+[x]: Packages must not store files under /srv, /opt or /usr/local
+
+Python:
+[ ]: Python eggs must not download any dependencies during the build
+     process.
+[ ]: A package which is used by another package via an egg interface should
+     provide egg info.
+[ ]: Package meets the Packaging Guidelines::Python
+[x]: Package contains BR: python2-devel or python3-devel
+[x]: Packages MUST NOT have dependencies (either build-time or runtime) on
+     packages named with the unversioned python- prefix unless no properly
+     versioned package exists. Dependencies on Python packages instead MUST
+     use names beginning with python2- or python3- as appropriate.
+[x]: Python packages must not contain %{pythonX_site(lib|arch)}/* in %files
+[x]: Binary eggs must be removed in %prep
+
+===== SHOULD items =====
+
+Generic:
+[!]: Reviewer should test that the package builds in mock.
+[ ]: If the source package does not include license text(s) as a separate
+     file from upstream, the packager SHOULD query upstream to include it.
+[ ]: Final provides and requires are sane (see attachments).
+[ ]: Fully versioned dependency in subpackages if applicable.
+     Note: No Requires: %{name}%{?_isa} = %{version}-%{release} in xrt-npu
+     , xrt-alveo , python3-xrt , xrt-devel , xrt-utils , xrt-utils-npu ,
+     xrt-utils-alveo
+[ ]: Package functions as described.
+[ ]: Latest version is packaged.
+[ ]: Package does not include license text files separate from upstream.
+[ ]: SourceX tarball generation or download is documented.
+     Note: Package contains tarball without URL, check comments
+[ ]: Sources are verified with gpgverify first in %prep if upstream
+     publishes signatures.
+     Note: gpgverify is not used.
+[ ]: Package should compile and build into binary rpms on all supported
+     architectures.
+[ ]: %check is present and all tests pass.
+[ ]: Packages should try to preserve timestamps of original installed
+     files.
+[x]: Buildroot is not present
+[x]: Package has no %clean section with rm -rf %{buildroot} (or
+     $RPM_BUILD_ROOT)
+[x]: No file requires outside of /etc, /bin, /sbin, /usr/bin, /usr/sbin.
+[x]: Packager, Vendor, PreReq, Copyright tags should not be in spec file
+[x]: The placement of pkgconfig(.pc) files are correct.
+[x]: SourceX is a working URL.
+[x]: Spec use %global instead of %define unless justified.
+
+===== EXTRA items =====
+
+Generic:
+[x]: Rpmlint is run on all installed packages.
+     Note: No rpmlint messages.
+[x]: Large data in /usr/share should live in a noarch subpackage if package
+     is arched.
+
+
+Rpmlint
+-------
+Checking: xrt-2.21.75-1.fc45.x86_64.rpm
+          xrt-npu-2.21.75-1.fc45.x86_64.rpm
+          xrt-alveo-2.21.75-1.fc45.x86_64.rpm
+          python3-xrt-2.21.75-1.fc45.x86_64.rpm
+          xrt-devel-2.21.75-1.fc45.x86_64.rpm
+          xrt-utils-2.21.75-1.fc45.x86_64.rpm
+          xrt-utils-npu-2.21.75-1.fc45.x86_64.rpm
+          xrt-utils-alveo-2.21.75-1.fc45.x86_64.rpm
+          xrt-2.21.75-1.fc45.src.rpm
+============================ rpmlint session starts ============================
+rpmlint: 2.8.0
+configuration:
+    /usr/lib/python3.14/site-packages/rpmlint/configdefaults.toml
+    /etc/xdg/rpmlint/fedora-spdx-licenses.toml
+    /etc/xdg/rpmlint/fedora.toml
+    /etc/xdg/rpmlint/scoring.toml
+    /etc/xdg/rpmlint/users-groups.toml
+    /etc/xdg/rpmlint/warn-on-functions.toml
+rpmlintrc: [PosixPath('/tmp/tmp6u1bahr3')]
+checks: 32, packages: 9
+
+xrt.x86_64: W: unstripped-binary-or-object /usr/lib64/libxilinxopencl.so.2.21.75
+xrt.x86_64: W: unstripped-binary-or-object /usr/lib64/libxrt++.so.2.21.75
+xrt.x86_64: W: unstripped-binary-or-object /usr/lib64/libxrt_core.so.2.21.75
+xrt.x86_64: W: unstripped-binary-or-object /usr/lib64/libxrt_coreutil.so.2.21.75
+xrt.x86_64: W: unstripped-binary-or-object /usr/lib64/libxrt_hip.so.2.21.75
+xrt-alveo.x86_64: W: unstripped-binary-or-object /usr/lib64/libsched_em.so.2.21.75
+xrt-alveo.x86_64: W: unstripped-binary-or-object /usr/lib64/libsched_em_v30.so.2.21.75
+xrt-alveo.x86_64: W: unstripped-binary-or-object /usr/lib64/libxrt_hwemu.so.2.21.75
+xrt-alveo.x86_64: W: unstripped-binary-or-object /usr/lib64/libxrt_noop.so.2.21.75
+xrt-alveo.x86_64: W: unstripped-binary-or-object /usr/lib64/libxrt_swemu.so.2.21.75
+xrt-npu.x86_64: W: unstripped-binary-or-object /usr/lib64/libxdp_core.so.2.21.75
+xrt-npu.x86_64: W: unstripped-binary-or-object /usr/lib64/libxrt_driver_xdna.so.2.21.75
+xrt-npu.x86_64: W: unstripped-binary-or-object /usr/lib64/xrt/module/libxdp_aie_profile_plugin.so.2.21.75
+xrt-npu.x86_64: W: unstripped-binary-or-object /usr/lib64/xrt/module/libxdp_aie_trace_plugin.so.2.21.75
+xrt-npu.x86_64: W: unstripped-binary-or-object /usr/lib64/xrt/module/libxdp_ml_timeline_plugin.so.2.21.75
+xrt-npu.x86_64: W: unstripped-binary-or-object /usr/lib64/xrt/module/libxdp_native_plugin.so.2.21.75
+xrt-npu.x86_64: W: unstripped-binary-or-object /usr/lib64/xrt/module/libxdp_user_plugin.so.2.21.75
+xrt-utils.x86_64: W: unstripped-binary-or-object /usr/bin/xclbinutil
+xrt-utils.x86_64: W: unstripped-binary-or-object /usr/bin/xrt-smi
+xrt-utils-alveo.x86_64: W: unstripped-binary-or-object /usr/bin/xbflash.qspi
+xrt-utils-alveo.x86_64: W: unstripped-binary-or-object /usr/bin/xbflash2
+xrt-utils-alveo.x86_64: W: unstripped-binary-or-object /usr/bin/xbmgmt
+xrt-utils-npu.x86_64: W: unstripped-binary-or-object /usr/bin/aiebu-asm
+xrt-utils-npu.x86_64: W: unstripped-binary-or-object /usr/bin/aiebu-dump
+xrt-utils-npu.x86_64: W: unstripped-binary-or-object /usr/bin/xrt-runner
+python3-xrt.x86_64: E: script-without-shebang /usr/lib64/python3.14/site-packages/_xbtop/__init__.py
+xrt-utils.x86_64: W: non-conffile-in-etc /etc/OpenCL/vendors/amdxrt.icd
+python3-xrt.x86_64: W: no-manual-page-for-binary xbtop
+xrt-utils.x86_64: W: no-manual-page-for-binary xrt-smi
+xrt-utils-alveo.x86_64: W: no-manual-page-for-binary xbflash.qspi
+xrt-utils-npu.x86_64: W: no-manual-page-for-binary xrt-runner
+python3-xrt.x86_64: W: no-documentation
+xrt.x86_64: W: no-documentation
+xrt-alveo.x86_64: W: no-documentation
+xrt-devel.x86_64: W: no-documentation
+xrt-npu.x86_64: W: no-documentation
+xrt.spec:224: W: macro-in-comment %ctest
+xrt.spec: W: invalid-url Source0: xrt-2.21.75.tar.xz
+python3-xrt.x86_64: W: description-shorter-than-summary
+xrt-npu.x86_64: W: description-shorter-than-summary
+xrt-utils-alveo.x86_64: W: description-shorter-than-summary
+xrt-utils-npu.x86_64: W: description-shorter-than-summary
+ 9 packages and 0 specfiles checked; 1 errors, 41 warnings, 79 filtered, 1 badness; has taken 3.0 s 
+
+
+
+
+Rpmlint (installed packages)
+----------------------------
+(none): E: there is no installed rpm "python3-xrt".
+(none): E: there is no installed rpm "xrt-alveo".
+(none): E: there is no installed rpm "xrt-utils-npu".
+(none): E: there is no installed rpm "xrt-utils".
+(none): E: there is no installed rpm "xrt-npu".
+(none): E: there is no installed rpm "xrt-devel".
+(none): E: there is no installed rpm "xrt".
+(none): E: there is no installed rpm "xrt-utils-alveo".
+There are no files to process nor additional arguments.
+Nothing to do, aborting.
+============================ rpmlint session starts ============================
+rpmlint: 2.9.0
+configuration:
+    /usr/lib/python3.14/site-packages/rpmlint/configdefaults.toml
+    /etc/xdg/rpmlint/fedora-spdx-licenses.toml
+    /etc/xdg/rpmlint/fedora.toml
+    /etc/xdg/rpmlint/scoring.toml
+    /etc/xdg/rpmlint/users-groups.toml
+    /etc/xdg/rpmlint/warn-on-functions.toml
+checks: 32, packages: 8
+
+ 0 packages and 0 specfiles checked; 0 errors, 0 warnings, 0 filtered, 0 badness; has taken 0.0 s 
+
+
+
+Unversioned so-files
+--------------------
+python3-xrt: /usr/lib64/python3.14/site-packages/pyxrt.cpython-314-x86_64-linux-gnu.so
+
+Requires
+--------
+xrt (rpmlib, GLIBC filtered):
+    libc.so.6()(64bit)
+    libgcc_s.so.1()(64bit)
+    libgcc_s.so.1(GCC_3.0)(64bit)
+    libgcc_s.so.1(GCC_3.3.1)(64bit)
+    libgcc_s.so.1(GCC_3.4)(64bit)
+    libm.so.6()(64bit)
+    libstdc++.so.6()(64bit)
+    libstdc++.so.6(CXXABI_1.3)(64bit)
+    libstdc++.so.6(CXXABI_1.3.11)(64bit)
+    libstdc++.so.6(CXXABI_1.3.13)(64bit)
+    libstdc++.so.6(CXXABI_1.3.15)(64bit)
+    libstdc++.so.6(CXXABI_1.3.2)(64bit)
+    libstdc++.so.6(CXXABI_1.3.3)(64bit)
+    libstdc++.so.6(CXXABI_1.3.5)(64bit)
+    libstdc++.so.6(CXXABI_1.3.7)(64bit)
+    libstdc++.so.6(CXXABI_1.3.9)(64bit)
+    libuuid.so.1()(64bit)
+    libuuid.so.1(UUID_1.0)(64bit)
+    libxrt++.so.2()(64bit)
+    libxrt_coreutil.so.2()(64bit)
+    rtld(GNU_HASH)
+
+xrt-npu (rpmlib, GLIBC filtered):
+    libc.so.6()(64bit)
+    libgcc_s.so.1()(64bit)
+    libgcc_s.so.1(GCC_3.0)(64bit)
+    libgcc_s.so.1(GCC_3.3.1)(64bit)
+    libstdc++.so.6()(64bit)
+    libstdc++.so.6(CXXABI_1.3)(64bit)
+    libstdc++.so.6(CXXABI_1.3.15)(64bit)
+    libstdc++.so.6(CXXABI_1.3.2)(64bit)
+    libstdc++.so.6(CXXABI_1.3.5)(64bit)
+    libstdc++.so.6(CXXABI_1.3.9)(64bit)
+    libuuid.so.1()(64bit)
+    libuuid.so.1(UUID_1.0)(64bit)
+    libxdp_core.so.2()(64bit)
+    libxrt_core.so.2()(64bit)
+    libxrt_coreutil.so.2()(64bit)
+    rtld(GNU_HASH)
+
+xrt-alveo (rpmlib, GLIBC filtered):
+    libc.so.6()(64bit)
+    libgcc_s.so.1()(64bit)
+    libgcc_s.so.1(GCC_3.0)(64bit)
+    libgcc_s.so.1(GCC_3.3.1)(64bit)
+    libm.so.6()(64bit)
+    libprotobuf.so.30()(64bit)
+    libstdc++.so.6()(64bit)
+    libstdc++.so.6(CXXABI_1.3)(64bit)
+    libstdc++.so.6(CXXABI_1.3.11)(64bit)
+    libstdc++.so.6(CXXABI_1.3.13)(64bit)
+    libstdc++.so.6(CXXABI_1.3.15)(64bit)
+    libstdc++.so.6(CXXABI_1.3.2)(64bit)
+    libstdc++.so.6(CXXABI_1.3.3)(64bit)
+    libstdc++.so.6(CXXABI_1.3.9)(64bit)
+    libuuid.so.1()(64bit)
+    libuuid.so.1(UUID_1.0)(64bit)
+    libxrt_coreutil.so.2()(64bit)
+    rtld(GNU_HASH)
+
+python3-xrt (rpmlib, GLIBC filtered):
+    /usr/bin/python3
+    libc.so.6()(64bit)
+    libgcc_s.so.1()(64bit)
+    libgcc_s.so.1(GCC_3.0)(64bit)
+    libgcc_s.so.1(GCC_3.3.1)(64bit)
+    libstdc++.so.6()(64bit)
+    libstdc++.so.6(CXXABI_1.3)(64bit)
+    libstdc++.so.6(CXXABI_1.3.11)(64bit)
+    libstdc++.so.6(CXXABI_1.3.13)(64bit)
+    libstdc++.so.6(CXXABI_1.3.15)(64bit)
+    libstdc++.so.6(CXXABI_1.3.2)(64bit)
+    libstdc++.so.6(CXXABI_1.3.3)(64bit)
+    libstdc++.so.6(CXXABI_1.3.5)(64bit)
+    libstdc++.so.6(CXXABI_1.3.9)(64bit)
+    libuuid.so.1()(64bit)
+    libuuid.so.1(UUID_1.0)(64bit)
+    libxrt_coreutil.so.2()(64bit)
+    python(abi)
+    python3(x86-64)
+    rtld(GNU_HASH)
+    xrt(x86-64)
+
+xrt-devel (rpmlib, GLIBC filtered):
+    /usr/bin/pkg-config
+    alveo(x86-64)
+    cmake-filesystem
+    libxilinxopencl.so.2()(64bit)
+    libxrt++.so.2()(64bit)
+    libxrt_core.so.2()(64bit)
+    libxrt_coreutil.so.2()(64bit)
+    libxrt_hip.so.2()(64bit)
+    libxrt_hwemu.so.2()(64bit)
+    libxrt_noop.so.2()(64bit)
+    libxrt_swemu.so.2()(64bit)
+    npu(x86-64)
+    python3-xrt(x86-64)
+    xrt(x86-64)
+
+xrt-utils (rpmlib, GLIBC filtered):
+    libboost_filesystem.so.1.90.0()(64bit)
+    libboost_program_options.so.1.90.0()(64bit)
+    libc.so.6()(64bit)
+    libcrypto.so.3()(64bit)
+    libcrypto.so.3(OPENSSL_3.0.0)(64bit)
+    libgcc_s.so.1()(64bit)
+    libgcc_s.so.1(GCC_3.0)(64bit)
+    libgcc_s.so.1(GCC_3.3.1)(64bit)
+    libstdc++.so.6()(64bit)
+    libstdc++.so.6(CXXABI_1.3)(64bit)
+    libstdc++.so.6(CXXABI_1.3.11)(64bit)
+    libstdc++.so.6(CXXABI_1.3.13)(64bit)
+    libstdc++.so.6(CXXABI_1.3.15)(64bit)
+    libstdc++.so.6(CXXABI_1.3.2)(64bit)
+    libstdc++.so.6(CXXABI_1.3.3)(64bit)
+    libstdc++.so.6(CXXABI_1.3.5)(64bit)
+    libstdc++.so.6(CXXABI_1.3.8)(64bit)
+    libstdc++.so.6(CXXABI_1.3.9)(64bit)
+    libuuid.so.1()(64bit)
+    libuuid.so.1(UUID_1.0)(64bit)
+    libxrt_coreutil.so.2()(64bit)
+    python3(x86-64)
+    rtld(GNU_HASH)
+
+xrt-utils-npu (rpmlib, GLIBC filtered):
+    libc.so.6()(64bit)
+    libgcc_s.so.1()(64bit)
+    libgcc_s.so.1(GCC_3.0)(64bit)
+    libgcc_s.so.1(GCC_3.3.1)(64bit)
+    libstdc++.so.6()(64bit)
+    libstdc++.so.6(CXXABI_1.3)(64bit)
+    libstdc++.so.6(CXXABI_1.3.13)(64bit)
+    libstdc++.so.6(CXXABI_1.3.15)(64bit)
+    libstdc++.so.6(CXXABI_1.3.3)(64bit)
+    libstdc++.so.6(CXXABI_1.3.5)(64bit)
+    libstdc++.so.6(CXXABI_1.3.9)(64bit)
+    libxrt_coreutil.so.2()(64bit)
+    npu(x86-64)
+    rtld(GNU_HASH)
+    utils(x86-64)
+
+xrt-utils-alveo (rpmlib, GLIBC filtered):
+    alveo(x86-64)
+    libboost_filesystem.so.1.90.0()(64bit)
+    libboost_program_options.so.1.90.0()(64bit)
+    libc.so.6()(64bit)
+    libgcc_s.so.1()(64bit)
+    libgcc_s.so.1(GCC_3.0)(64bit)
+    libgcc_s.so.1(GCC_3.3.1)(64bit)
+    libstdc++.so.6()(64bit)
+    libstdc++.so.6(CXXABI_1.3)(64bit)
+    libstdc++.so.6(CXXABI_1.3.9)(64bit)
+    libxrt_coreutil.so.2()(64bit)
+    rtld(GNU_HASH)
+    utils(x86-64)
+
+
+
+Provides
+--------
+xrt:
+    libxilinxopencl.so.2()(64bit)
+    libxrt++.so.2()(64bit)
+    libxrt_core.so.2()(64bit)
+    libxrt_coreutil.so.2()(64bit)
+    libxrt_hip.so.2()(64bit)
+    xrt
+    xrt(x86-64)
+
+xrt-npu:
+    libxdp_aie_profile_plugin.so.2()(64bit)
+    libxdp_aie_trace_plugin.so.2()(64bit)
+    libxdp_core.so.2()(64bit)
+    libxdp_ml_timeline_plugin.so.2()(64bit)
+    libxdp_native_plugin.so.2()(64bit)
+    libxdp_user_plugin.so.2()(64bit)
+    libxrt_driver_xdna.so.2()(64bit)
+    xrt-npu
+    xrt-npu(x86-64)
+
+xrt-alveo:
+    libsched_em.so.2()(64bit)
+    libsched_em_v30.so.2()(64bit)
+    libxrt_hwemu.so.2()(64bit)
+    libxrt_noop.so.2()(64bit)
+    libxrt_swemu.so.2()(64bit)
+    xrt-alveo
+    xrt-alveo(x86-64)
+
+python3-xrt:
+    python-xrt
+    python3-xrt
+    python3-xrt(x86-64)
+    python3.14-xrt
+
+xrt-devel:
+    cmake(xrt)
+    pkgconfig(xrt)
+    xrt-devel
+    xrt-devel(x86-64)
+
+xrt-utils:
+    xrt-utils
+    xrt-utils(x86-64)
+
+xrt-utils-npu:
+    xrt-utils-npu
+    xrt-utils-npu(x86-64)
+
+xrt-utils-alveo:
+    xrt-utils-alveo
+    xrt-utils-alveo(x86-64)
+
+
+
+Generated by fedora-review 0.11.0 (05c5b26) last change: 2025-11-29
+Command line :/bin/fedora-review --no-colors --prebuilt --rpm-spec --name xrt --mock-config /var/lib/copr-rpmbuild/results/configs/child.cfg
+Buildroot used: fedora-rawhide-x86_64
+Active plugins: Shell-api, C/C++, Generic, Python
+Disabled plugins: PHP, Perl, SugarActivity, fonts, R, Haskell, Ocaml, Java
+Disabled flags: EXARCH, EPEL6, EPEL7, DISTTAG, BATCH
