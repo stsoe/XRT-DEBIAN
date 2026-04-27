@@ -44,58 +44,67 @@ This source package builds XRT runtime libraries split for core / NPU / Alveo,
 Python bindings, development files, and utilities.
 
 %package npu
-Summary:        AMD Xilinx Runtime (XRT) NPU - runtime libraries
+Summary:        AMD Xilinx Runtime (XRT) - NPU runtime libraries
+Requires:       %{name}%{?_isa} = %{epoch}:%{version}-%{release}
 
 %description npu
-Runtime shared libraries for the XRT NPU path.
+Runtime shared libraries for the XRT NPU path.  Facilitates usage of
+AMD Ryzen NPU through software APIs provided by XRT.
 
 %package alveo
-Summary:        AMD Xilinx Runtime (XRT) ALVEO - runtime libraries
+Summary:        AMD Xilinx Runtime (XRT) - Alveo runtime libraries
+Requires:       %{name}%{?_isa} = %{epoch}:%{version}-%{release}
 
 %description alveo
 Runtime shared libraries for the XRT Alveo path, including scheduling and
-(on x86_64) hardware/software emulation support.
+(on x86_64) hardware/software emulation support. Facilitates usage of
+AMD Xilinx Alveo through software APIs provided by XRT.
 
 %package -n python3-xrt
 Summary:        AMD Xilinx Runtime (XRT) - Python bindings
 Requires:       python3%{?_isa}
-Requires:       xrt%{?_isa} = %{epoch}:%{version}-%{release}
+Requires:       %{name}%{?_isa} = %{epoch}:%{version}-%{release}
 
 %description -n python3-xrt
-Python bindings for XRT.
+Python bindings for XRT.  Facilitates control of AMD Ryzen NPU
+and AMD Xilinx Alveo through Python.
 
 %package devel
 Summary:        AMD Xilinx Runtime (XRT) - development files
 Requires:       python3-xrt%{?_isa} = %{epoch}:%{version}-%{release}
-Requires:       xrt%{?_isa} = %{epoch}:%{version}-%{release}
-Requires:       npu%{?_isa} = %{epoch}:%{version}-%{release}
-Requires:       alveo%{?_isa} = %{epoch}:%{version}-%{release}
+Requires:       %{name}%{?_isa} = %{epoch}:%{version}-%{release}
+Requires:       %{name}-npu%{?_isa} = %{epoch}:%{version}-%{release}
+Requires:       %{name}-alveo%{?_isa} = %{epoch}:%{version}-%{release}
+Requires:       opencl-headers
+Requires:       rocm-hip-devel%{?_isa}
 
 %description devel
-Headers, CMake package files, pkg-config files, and static libraries.
+Headers, CMake package files, pkg-config files, and link libraries.
 
 %package utils
 Summary:        AMD Xilinx Runtime (XRT) - utilities
 Requires:       python3%{?_isa}
+Requires:       %{name}%{?_isa} = %{epoch}:%{version}-%{release}
+Requires:       ocl-icd
 
 %description utils
-General-purpose XRT command-line tools.
+General purpose XRT command-line tools.
 
 %package utils-npu
-Summary:        AMD Xilinx Runtime (XRT) NPU - utilities
-Requires:       utils%{?_isa} = %{epoch}:%{version}-%{release}
-Requires:       npu%{?_isa} = %{epoch}:%{version}-%{release}
+Summary:        AMD Xilinx Runtime (XRT) - NPU utilities
+Requires:       %{name}-utils%{?_isa} = %{epoch}:%{version}-%{release}
+Requires:       %{name}-npu%{?_isa} = %{epoch}:%{version}-%{release}
 
 %description utils-npu
-NPU-specific utilities.
+NPU specific utilities for AMD Ryzen NPU including AIE binary utilities (AIEBU).
 
 %package utils-alveo
-Summary:        AMD Xilinx Runtime (XRT) ALVEO - utilities
-Requires:       utils%{?_isa} = %{epoch}:%{version}-%{release}
-Requires:       alveo%{?_isa} = %{epoch}:%{version}-%{release}
+Summary:        AMD Xilinx Runtime (XRT) - Alveo utilities
+Requires:       %{name}-utils%{?_isa} = %{epoch}:%{version}-%{release}
+Requires:       %{name}-alveo%{?_isa} = %{epoch}:%{version}-%{release}
 
 %description utils-alveo
-Alveo-specific utilities.
+Alveo-specific utilities for AMD Xilinx Alveo.  Includes management and flash tools.
 
 %prep
 %setup -q -n %{name}-%{version}
@@ -220,7 +229,7 @@ rm -rf %{buildroot}/runtime_src
 
 %check
 # Uncomment when CTest is reliable in mock/Koji:
-# %ctest
+# %%ctest
 
 %files
 %license xrt/XRT/LICENSE
