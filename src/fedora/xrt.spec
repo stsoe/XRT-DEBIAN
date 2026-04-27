@@ -1,8 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
 # Spec layout mirrors src/debian/control and src/debian/rules.
-
-%global debug_package %{nil}
-
 Name:           xrt
 Epoch:          0
 Version:        2.21.75
