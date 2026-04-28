@@ -9,6 +9,11 @@ Summary:        AMD Xilinx FPGA and ACAP runtime (XRT)
 License:        Apache-2.0 AND MIT AND MIT-Khronos-old
 URL:            https://github.com/Xilinx/XRT
 
+# License breakdown:
+# - Core XRT runtime: Apache-2.0
+# - AIE binary utilities: MIT
+# - Core XRT OpenCL library: Apache-2.0 and MIT-Khronos-old
+
 Source0:       %{name}-%{version}.tar.xz
 
 ExclusiveArch:  aarch64 x86_64
@@ -85,7 +90,7 @@ Headers, CMake package files, pkg-config files, and link libraries.
 Summary:        AMD Xilinx Runtime (XRT) - utilities
 Requires:       python3%{?_isa}
 Requires:       %{name}%{?_isa} = %{epoch}:%{version}-%{release}
-Requires:       ocl-icd
+Requires:       opencl-filesystem
 
 %description utils
 General purpose XRT command-line tools.
@@ -104,7 +109,8 @@ Requires:       %{name}-utils%{?_isa} = %{epoch}:%{version}-%{release}
 Requires:       %{name}-alveo%{?_isa} = %{epoch}:%{version}-%{release}
 
 %description utils-alveo
-Alveo-specific utilities for AMD Xilinx Alveo.  Includes management and flash tools.
+Alveo-specific utilities for AMD Xilinx Alveo including management and
+flash tools.
 
 %prep
 %setup -q -n %{name}-%{version}
@@ -256,6 +262,7 @@ rm -rf %{buildroot}/runtime_src
 %endif
 
 %files -n python3-xrt
+%dir %{python3_sitearch}/_xbtop/
 %{python3_sitearch}/pyxrt*.so
 %{python3_sitearch}/_xbtop/
 %{_bindir}/xbtop

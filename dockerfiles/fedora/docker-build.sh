@@ -36,10 +36,10 @@ echo "Building image: ${IMAGE_NAME} (FROM fedora:${FEDORA_VERSION})"
 docker build \
   --build-arg "FEDORA_VERSION=${FEDORA_VERSION}" \
   -t "${IMAGE_NAME}" \
-  -f "${SCRIPT_DIR}/Dockerfile" \
+  -f "${SCRIPT_DIR}/f42.Dockerfile" \
   "${SCRIPT_DIR}"
 
 echo ""
 echo "Image built: ${IMAGE_NAME}"
 echo "Run an interactive shell with the repo mounted:"
-echo "  ${SCRIPT_DIR}/docker-run-fed.sh ${IMAGE_NAME}"
+echo "  ${SCRIPT_DIR}/docker-run.sh ${IMAGE_NAME}"
