@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 # Spec layout mirrors src/debian/control and src/debian/rules.
 Name:           xrt
-Epoch:          0
 Version:        2.21.75
 Release:        1%{?dist}
 Summary:        AMD Xilinx FPGA and ACAP runtime (XRT)
+#Assisted-by:    Generic LLM chatbot
 
 License:        Apache-2.0 AND MIT AND MIT-Khronos-old
 URL:            https://github.com/Xilinx/XRT
@@ -14,7 +14,35 @@ URL:            https://github.com/Xilinx/XRT
 # - AIE binary utilities: MIT
 # - Core XRT OpenCL library: Apache-2.0 and MIT-Khronos-old
 
-Source0:       %{name}-%{version}.tar.xz
+Source0:        https://github.com/Xilinx/XRT/releases/download/%{version}/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+
+# Debian patches
+Patch0:         6.18.patch
+Patch1:         6.19.patch
+Patch2:         hip.patch
+Patch3:         tracer.patch
+Patch4:         hip2.patch
+Patch5:         xrt-smi.patch
+Patch6:         hip3.patch
+Patch7:         xrt-9660.patch
+Patch8:         xrt-9730.patch
+Patch9:         xrt-9731.patch
+Patch10:        xrt-9738.patch
+Patch11:        xdna-1255.patch
+
+# Fedora patches
+Patch100:       dkms-disable.patch
+Patch101:       static.patch
+Patch102:       license.patch
+
+# Man pages not installed by CMake
+Source10:       aiebu-asm.1
+Source11:       aiebu-dump.1
+Source12:       xbflash.qspi.1
+Source13:       xbflash2.1
+Source14:       xbmgmt.1
+Source15:       xclbinutil.1
+Source16:       xrt-replay.1
 
 ExclusiveArch:  aarch64 x86_64
 
@@ -43,6 +71,7 @@ BuildRequires:  doxygen
 BuildRequires:  appstream
 BuildRequires:  python3-rpm-macros
 BuildRequires:  rocm-hip-devel
+BuildRequires:  bash-completion
 
 %description
 This source package builds XRT runtime libraries split for core / NPU / Alveo,
@@ -50,7 +79,7 @@ Python bindings, development files, and utilities.
 
 %package npu
 Summary:        AMD Xilinx Runtime (XRT) - NPU runtime libraries
-Requires:       %{name}%{?_isa} = %{epoch}:%{version}-%{release}
+Requires:       %{name}%{?_isa} = %{version}-%{release}
 
 %description npu
 Runtime shared libraries for the XRT NPU path.  Facilitates usage of
@@ -58,7 +87,7 @@ AMD Ryzen NPU through software APIs provided by XRT.
 
 %package alveo
 Summary:        AMD Xilinx Runtime (XRT) - Alveo runtime libraries
-Requires:       %{name}%{?_isa} = %{epoch}:%{version}-%{release}
+Requires:       %{name}%{?_isa} = %{version}-%{release}
 
 %description alveo
 Runtime shared libraries for the XRT Alveo path, including scheduling and
@@ -68,7 +97,7 @@ AMD Xilinx Alveo through software APIs provided by XRT.
 %package -n python3-xrt
 Summary:        AMD Xilinx Runtime (XRT) - Python bindings
 Requires:       python3%{?_isa}
-Requires:       %{name}%{?_isa} = %{epoch}:%{version}-%{release}
+Requires:       %{name}%{?_isa} = %{version}-%{release}
 
 %description -n python3-xrt
 Python bindings for XRT.  Facilitates control of AMD Ryzen NPU
@@ -76,20 +105,21 @@ and AMD Xilinx Alveo through Python.
 
 %package devel
 Summary:        AMD Xilinx Runtime (XRT) - development files
-Requires:       python3-xrt%{?_isa} = %{epoch}:%{version}-%{release}
-Requires:       %{name}%{?_isa} = %{epoch}:%{version}-%{release}
-Requires:       %{name}-npu%{?_isa} = %{epoch}:%{version}-%{release}
-Requires:       %{name}-alveo%{?_isa} = %{epoch}:%{version}-%{release}
+Requires:       python3-xrt%{?_isa} = %{version}-%{release}
+Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       %{name}-npu%{?_isa} = %{version}-%{release}
+Requires:       %{name}-alveo%{?_isa} = %{version}-%{release}
+Requires:       libuuid-devel
 Requires:       opencl-headers
 Requires:       rocm-hip-devel%{?_isa}
 
 %description devel
-Headers, CMake package files, pkg-config files, and link libraries.
+Library and headers for %{name}
 
 %package utils
 Summary:        AMD Xilinx Runtime (XRT) - utilities
 Requires:       python3%{?_isa}
-Requires:       %{name}%{?_isa} = %{epoch}:%{version}-%{release}
+Requires:       %{name}%{?_isa} = %{version}-%{release}
 Requires:       opencl-filesystem
 
 %description utils
@@ -97,45 +127,23 @@ General purpose XRT command-line tools.
 
 %package utils-npu
 Summary:        AMD Xilinx Runtime (XRT) - NPU utilities
-Requires:       %{name}-utils%{?_isa} = %{epoch}:%{version}-%{release}
-Requires:       %{name}-npu%{?_isa} = %{epoch}:%{version}-%{release}
+Requires:       %{name}-utils%{?_isa} = %{version}-%{release}
+Requires:       %{name}-npu%{?_isa} = %{version}-%{release}
 
 %description utils-npu
 NPU specific utilities for AMD Ryzen NPU including AIE binary utilities (AIEBU).
 
 %package utils-alveo
 Summary:        AMD Xilinx Runtime (XRT) - Alveo utilities
-Requires:       %{name}-utils%{?_isa} = %{epoch}:%{version}-%{release}
-Requires:       %{name}-alveo%{?_isa} = %{epoch}:%{version}-%{release}
+Requires:       %{name}-utils%{?_isa} = %{version}-%{release}
+Requires:       %{name}-alveo%{?_isa} = %{version}-%{release}
 
 %description utils-alveo
 Alveo-specific utilities for AMD Xilinx Alveo including management and
 flash tools.
 
 %prep
-%setup -q -n %{name}-%{version}
-
-# Apply the same patch queue as Debian (src/debian/patches/series).
-if [ -f debian/patches/series ]; then
-  while IFS= read -r line || [ -n "$line" ]; do
-    case "$line" in
-      ''|\#*) continue ;;
-    esac
-    echo "PATCH: debian/patches/${line}"
-    /usr/bin/patch -p1 --fuzz=0 --silent -i debian/patches/${line}
-  done < debian/patches/series
-fi
-
-# Apply patches specific to fedora
-if [ -f fedora/patches/series ]; then
-  while IFS= read -r line || [ -n "$line" ]; do
-    case "$line" in
-      ''|\#*) continue ;;
-    esac
-    echo "PATCH: fedora/patches/${line}"
-    /usr/bin/patch -p1 --fuzz=0 --silent -i fedora/patches/${line}
-  done < fedora/patches/series
-fi
+%autosetup -n %{name}-%{version} -p1
 
 %build
 %cmake \
@@ -155,59 +163,36 @@ fi
 
 # xbtop: CMake installs the package under %%{_prefix}/python/ (see XRT_INSTALL_PYTHON_DIR
 # in xrtVariables.cmake).
-if [ -d %{buildroot}%{_prefix}/python/_xbtop ]; then
-  install -d %{buildroot}%{python3_sitearch}
-  cp -a %{buildroot}%{_prefix}/python/_xbtop %{buildroot}%{python3_sitearch}/
-  rm -rf %{buildroot}%{_prefix}/python/_xbtop
-fi
-rmdir %{buildroot}%{_prefix}/python 2>/dev/null || true
+# Move xbtop Python module to correct Fedora location
+install -d -p %{buildroot}%{python3_sitearch}
+mv %{buildroot}%{_prefix}/python/_xbtop %{buildroot}%{python3_sitearch}/
+rmdir %{buildroot}%{_prefix}/python 2>/dev/null || :
 
 # Move the installed Python entry script over the bin wrapper from CMake.
-if [ -f %{buildroot}%{_prefix}/python/xbtop.py ]; then
-  mv -f %{buildroot}%{_prefix}/python/xbtop.py %{buildroot}%{_bindir}/xbtop
-elif [ -f %{buildroot}%{python3_sitearch}/xbtop.py ]; then
-  mv -f %{buildroot}%{python3_sitearch}/xbtop.py %{buildroot}%{_bindir}/xbtop
-fi
-
-# Fix permission of non-executable scripts (skip package __init__.py: not a script, keep 0644)
-for script in \
-    %{buildroot}%{_bindir}/xbtop \
-    %{buildroot}%{python3_sitearch}/_xbtop/*.py ; do
-  [[ -f "$script" ]] || continue
-  [[ "$(basename "$script")" == __init__.py ]] && chmod 0644 "$script" && continue
-  chmod 755 "$script"
-done
+mv -f %{buildroot}%{_prefix}/python/xbtop.py %{buildroot}%{_bindir}/xbtop 2>/dev/null || :
+mv -f %{buildroot}%{python3_sitearch}/xbtop.py %{buildroot}%{_bindir}/xbtop 2>/dev/null || :
 
 # CMake installs xbflash2 under %%{_prefix}/local/bin; ship as %%{_bindir}/xbflash2.
-if [ -e %{buildroot}%{_prefix}/local/bin/xbflash2 ]; then
-  install -d %{buildroot}%{_bindir}
-  mv -f %{buildroot}%{_prefix}/local/bin/xbflash2 %{buildroot}%{_bindir}/xbflash2
-fi
-rmdir %{buildroot}%{_prefix}/local/bin %{buildroot}%{_prefix}/local 2>/dev/null || true
+mv -f %{buildroot}%{_prefix}/local/bin/xbflash2 %{buildroot}%{_bindir}/xbflash2
+rmdir %{buildroot}%{_prefix}/local/bin %{buildroot}%{_prefix}/local 2>/dev/null || :
 
-# Man pages shipped by Debian packaging (not always installed by upstream CMake).
-install -d %{buildroot}%{_mandir}/man1
-for m in xclbinutil.1 aiebu-asm.1 aiebu-dump.1 xbflash2.1 xbflash.qspi.1 xbmgmt.1; do
-  if [ -f debian/man/"$m" ]; then
-    install -m 0644 debian/man/"$m" %{buildroot}%{_mandir}/man1/
-  fi
-done
+# Man pages, not installed by upstream CMake
+install -d -m 0755 %{buildroot}%{_mandir}/man1
+install -p -m 0644 %{SOURCE10} %{SOURCE11} %{SOURCE12} %{SOURCE13} \
+        %{SOURCE14} %{SOURCE15} %{buildroot}%{_mandir}/man1/
 
 # Bash completion
-install -d %{buildroot}%{_datadir}/bash-completion/completions
-if [ -f %{buildroot}%{_datadir}/completions/xbutil-bash-completion ]; then
-  install -m 0644 %{buildroot}%{_datadir}/completions/xbutil-bash-completion \
-    %{buildroot}%{_datadir}/bash-completion/completions/xrt-smi
-fi
-if [ -f %{buildroot}%{_datadir}/completions/xbmgmt-bash-completion ]; then
-  install -m 0644 %{buildroot}%{_datadir}/completions/xbmgmt-bash-completion \
-    %{buildroot}%{_datadir}/bash-completion/completions/xbmgmt2
-fi
+# Upstream CMake puts in wrong location - move to correct path
+install -d -m 0755 %{buildroot}%{bash_completions_dir}
+install -Dpm 0644 %{buildroot}%{_datadir}/completions/xbutil-bash-completion \
+   %{buildroot}%{bash_completions_dir}/xrt-smi || :
+install -Dpm 0644 %{buildroot}%{_datadir}/completions/xbmgmt-bash-completion \
+   %{buildroot}%{bash_completions_dir}/xbmgmt2 || :
+rm -rf %{buildroot}%{_datadir}/completions 2>/dev/null || :
 
 # ---------------------------------------------------------------------------
-# Match debian/not-installed: remove paths upstream installs but no subpackage
-# lists, so rpmbuild check-files does not fail on orphans.
-# (Run after copying completions out of %%{_datadir}/completions/.)
+# Remove paths upstream installs but no subpackage lists, so rpmbuild
+# check-files does not fail on orphans.
 # ---------------------------------------------------------------------------
 rm -rf %{buildroot}/bins
 find %{buildroot}%{_bindir} -mindepth 1 -maxdepth 1 -type f -name '*.sh' -delete
@@ -224,8 +209,6 @@ rm -rf %{buildroot}/usr/local
 rm -rf %{buildroot}%{_datadir}/completions
 rm -rf %{buildroot}%{_datadir}/doc
 rm -rf %{buildroot}/usr/version.json
-
-# not-installed also lists these at the fake install root; remove if present.
 rm -rf %{buildroot}/.clang-tidy
 rm -rf %{buildroot}/CMake
 rm -rf %{buildroot}/include
@@ -234,8 +217,7 @@ rm -rf %{buildroot}/python
 rm -rf %{buildroot}/runtime_src
 
 %check
-# Uncomment when CTest is reliable in mock/Koji:
-# %%ctest
+%ctest
 
 %files
 %license xrt/XRT/LICENSE
@@ -262,16 +244,16 @@ rm -rf %{buildroot}/runtime_src
 %endif
 
 %files -n python3-xrt
+%defattr(644, root, root)
 %dir %{python3_sitearch}/_xbtop/
 %{python3_sitearch}/pyxrt*.so
-%{python3_sitearch}/_xbtop/
-%{_bindir}/xbtop
+%{python3_sitearch}/_xbtop/*
+%attr(755, root, root) %{_bindir}/xbtop
 
 %files devel
 %dir %{_includedir}/xrt
 %{_includedir}/xrt/*
 %{_includedir}/CL/*
-%dir %{_includedir}/hip
 %{_includedir}/hip/*
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/*.so
