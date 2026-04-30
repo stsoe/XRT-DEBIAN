@@ -56,26 +56,31 @@ find . -type f -name '*.swn' -exec /bin/rm -f {} \;
 find . -type f -name '*.swo' -exec /bin/rm -f {} \;
 /bin/rm -rf xdna/xdna-driver/tools/bins
 
-echo "==> Creating Source0 tarball xrt-${VERSION}.tar.xz (GNU tar --transform)"
+echo "==> Creating Source0 tarball xrt-${VERSION}.tar.gz (GNU tar --transform)"
 cd /tmp/upstream
-/bin/rm -f "xrt-${VERSION}.tar.xz"
+/bin/rm -f "xrt-${VERSION}.tar.gz"
 tar -C build \
   --transform "s,^,xrt-${VERSION}/," \
   --exclude-vcs \
-  -caf "xrt-${VERSION}.tar.xz" .
+  -czf "xrt-${VERSION}.tar.gz" .
 
 echo "==> Installing spec and tarball into ${RPMTOPDIR}"
 install -D -m0644 "${SPEC_SRC}" "${RPMTOPDIR}/SPECS/xrt.spec"
-install -D -m0644 "/tmp/upstream/xrt-${VERSION}.tar.xz" "${RPMTOPDIR}/SOURCES/xrt-${VERSION}.tar.xz"
+install -D -m0644 "/tmp/upstream/xrt-${VERSION}.tar.gz" "${RPMTOPDIR}/SOURCES/xrt-${VERSION}.tar.gz"
+
+echo "==> Installing patches to ${RPMTOPDIR}/SOURCES"
+cp ${ROOT_DIR}/src/debian/patches/*.patch ${RPMTOPDIR}/SOURCES
+cp ${ROOT_DIR}/src/fedora/patches/*.patch ${RPMTOPDIR}/SOURCES
+
+echo "==> Installing manpages ${RPMTOPDIR}/SOURCES"
+cp ${ROOT_DIR}/src/debian/man/* ${RPMTOPDIR}/SOURCES
 
 echo "==> rpmbuild -ba"
 export CCACHE_DIR="/scratch/ccache/rpmbuild"
 mkdir -p $CCACHE_DIR
 export CC="ccache gcc"
 export CXX="ccache g++"
-rpmbuild -ba "${RPMTOPDIR}/SPECS/xrt.spec"
-# build without clean (prevese buildroot for inspection)
-#rpmbuild -bi "${RPMTOPDIR}/SPECS/xrt.spec"
+rpmbuild -ba --noclean "${RPMTOPDIR}/SPECS/xrt.spec"
 ccache --show-stats || true
 
 OUT="${OUT:-/tmp/upstream/rpm-artifacts}"

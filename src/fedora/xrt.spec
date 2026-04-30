@@ -34,6 +34,8 @@ Patch11:        xdna-1255.patch
 Patch100:       dkms-disable.patch
 Patch101:       static.patch
 Patch102:       license.patch
+Patch103:       xbmgmt-link.patch
+Patch104:       emu-disable.patch
 
 # Man pages not installed by CMake
 Source10:       aiebu-asm.1
@@ -85,15 +87,6 @@ Requires:       %{name}%{?_isa} = %{version}-%{release}
 Runtime shared libraries for the XRT NPU path.  Facilitates usage of
 AMD Ryzen NPU through software APIs provided by XRT.
 
-%package alveo
-Summary:        AMD Xilinx Runtime (XRT) - Alveo runtime libraries
-Requires:       %{name}%{?_isa} = %{version}-%{release}
-
-%description alveo
-Runtime shared libraries for the XRT Alveo path, including scheduling and
-(on x86_64) hardware/software emulation support. Facilitates usage of
-AMD Xilinx Alveo through software APIs provided by XRT.
-
 %package -n python3-xrt
 Summary:        AMD Xilinx Runtime (XRT) - Python bindings
 Requires:       python3%{?_isa}
@@ -108,7 +101,6 @@ Summary:        AMD Xilinx Runtime (XRT) - development files
 Requires:       python3-xrt%{?_isa} = %{version}-%{release}
 Requires:       %{name}%{?_isa} = %{version}-%{release}
 Requires:       %{name}-npu%{?_isa} = %{version}-%{release}
-Requires:       %{name}-alveo%{?_isa} = %{version}-%{release}
 Requires:       libuuid-devel
 Requires:       opencl-headers
 Requires:       rocm-hip-devel%{?_isa}
@@ -136,7 +128,6 @@ NPU specific utilities for AMD Ryzen NPU including AIE binary utilities (AIEBU).
 %package utils-alveo
 Summary:        AMD Xilinx Runtime (XRT) - Alveo utilities
 Requires:       %{name}-utils%{?_isa} = %{version}-%{release}
-Requires:       %{name}-alveo%{?_isa} = %{version}-%{release}
 
 %description utils-alveo
 Alveo-specific utilities for AMD Xilinx Alveo including management and
@@ -154,7 +145,8 @@ flash tools.
   -DXRT_ENABLE_HIP=ON \
   -DXRT_ENABLE_TRACER=OFF \
   -DXRT_ENABLE_DKMS=OFF \
-  -DXRT_INSTALL_STATIC_LIBRARY=OFF
+  -DXRT_INSTALL_STATIC_LIBRARY=OFF \
+  -DXRT_ENABLE_EMULATION=OFF
 
 %cmake_build
 
@@ -171,6 +163,11 @@ rmdir %{buildroot}%{_prefix}/python 2>/dev/null || :
 # Move the installed Python entry script over the bin wrapper from CMake.
 mv -f %{buildroot}%{_prefix}/python/xbtop.py %{buildroot}%{_bindir}/xbtop 2>/dev/null || :
 mv -f %{buildroot}%{python3_sitearch}/xbtop.py %{buildroot}%{_bindir}/xbtop 2>/dev/null || :
+
+# Fix python script permissions
+chmod 755 %{buildroot}%{_bindir}/xbtop
+chmod 755 %{buildroot}%{python3_sitearch}/_xbtop/*.py
+chmod 644 %{buildroot}%{python3_sitearch}/_xbtop/__init__.py
 
 # CMake installs xbflash2 under %%{_prefix}/local/bin; ship as %%{_bindir}/xbflash2.
 mv -f %{buildroot}%{_prefix}/local/bin/xbflash2 %{buildroot}%{_bindir}/xbflash2
@@ -235,20 +232,11 @@ rm -rf %{buildroot}/runtime_src
 %dir %{_libdir}/xrt/module
 %{_libdir}/xrt/*/libxdp*.so.*
 
-%files alveo
-%{_libdir}/libsched_em*.so.*
-%ifarch x86_64
-%{_libdir}/libxrt_hwemu*.so.*
-%{_libdir}/libxrt_swemu*.so.*
-%{_libdir}/libxrt_noop.so.*
-%endif
-
 %files -n python3-xrt
-%defattr(644, root, root)
 %dir %{python3_sitearch}/_xbtop/
 %{python3_sitearch}/pyxrt*.so
 %{python3_sitearch}/_xbtop/*
-%attr(755, root, root) %{_bindir}/xbtop
+%{_bindir}/xbtop
 
 %files devel
 %dir %{_includedir}/xrt
@@ -283,5 +271,5 @@ rm -rf %{buildroot}/runtime_src
 %{_datadir}/bash-completion/completions/xbmgmt2
 
 %changelog
-* Mon Apr 20 2026 Fedora Packaging <stsoe@amd.com> - 0:2.21.75-1
+* Mon Apr 20 2026 Fedora Packaging <stsoe@amd.com> - 2.21.75-1
 - Initial Fedora spec mirroring src/debian binary package split.

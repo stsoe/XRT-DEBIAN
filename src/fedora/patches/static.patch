@@ -11,7 +11,7 @@ index 35d45a01f..9157f42c4 100644
 +option(XRT_INSTALL_STATIC_LIBRARY "Enable CMake static library targets" ON)
 +if (XRT_YOCTO)
 +  set(XRT_INSTALL_STATIC_LIBRARY OFF)
-+endif()                       
++endif()
 +
  # Indicate that we are building XRT
  add_compile_definitions("XRT_BUILD")
