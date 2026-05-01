@@ -36,6 +36,7 @@ Patch101:       static.patch
 Patch102:       license.patch
 Patch103:       xbmgmt-link.patch
 Patch104:       emu-disable.patch
+Patch105:       enable-testing.patch
 
 # Man pages not installed by CMake
 Source10:       aiebu-asm.1
@@ -51,7 +52,6 @@ ExclusiveArch:  aarch64 x86_64
 BuildRequires:  cmake >= 3.16
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
-BuildRequires:  git
 BuildRequires:  pkgconfig
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(libudev)
@@ -234,10 +234,9 @@ find %{buildroot}%{_libdir} -mindepth 1 -maxdepth 1 -name 'libazure*.so*' -delet
 find %{buildroot}%{_libdir} -mindepth 1 -maxdepth 1 -name 'libcontainer*.so*' -delete
 find %{buildroot}%{_libdir} -mindepth 1 -maxdepth 1 -name 'libsched*.so' -delete
 rm -rf %{buildroot}/usr/license
-rm -rf %{buildroot}/usr/share/doc
+rm -rf %{buildroot}%{_docdir}
 rm -rf %{buildroot}/usr/local
 rm -rf %{buildroot}%{_datadir}/completions
-rm -rf %{buildroot}%{_datadir}/doc
 rm -rf %{buildroot}/usr/version.json
 rm -rf %{buildroot}/.clang-tidy
 rm -rf %{buildroot}/CMake
@@ -247,7 +246,9 @@ rm -rf %{buildroot}/python
 rm -rf %{buildroot}/runtime_src
 
 %check
-%ctest
+XILINX_XRT=%{buildroot}/usr \
+%{__ctest} --test-dir redhat-linux-build --output-on-failure --force-new-ctest-process -j%{?_smp_build_ncpus}
+
 
 %files
 %license xrt/XRT/LICENSE
