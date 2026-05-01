@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 # Spec layout mirrors src/debian/control and src/debian/rules.
+# Assisted-by:    Generic LLM chatbot
 Name:           xrt
 Version:        2.21.75
 Release:        1%{?dist}
 Summary:        AMD Xilinx FPGA and ACAP runtime (XRT)
-#Assisted-by:    Generic LLM chatbot
 
 License:        Apache-2.0 AND MIT AND MIT-Khronos-old
 URL:            https://github.com/Xilinx/XRT
@@ -76,16 +76,24 @@ BuildRequires:  rocm-hip-devel
 BuildRequires:  bash-completion
 
 %description
-This source package builds XRT runtime libraries split for core / NPU / Alveo,
-Python bindings, development files, and utilities.
+AMD Xilinx Runtime (XRT) provides a runtime environment for AMD Xilinx
+Alveo FPGAs and AMD Ryzen NPUs.  It includes core runtime
+libraries, Python bindings, development files, and utilities for
+managing and programming AMD Xilinx devices.
+
+This package provides the core runtime environment for XRT.
 
 %package npu
 Summary:        AMD Xilinx Runtime (XRT) - NPU runtime libraries
 Requires:       %{name}%{?_isa} = %{version}-%{release}
 
 %description npu
-Runtime shared libraries for the XRT NPU path.  Facilitates usage of
-AMD Ryzen NPU through software APIs provided by XRT.
+AMD Xilinx Runtime (XRT) provides a runtime environment for AMD Xilinx
+Alveo FPGAs and AMD Ryzen NPUs.  It includes core runtime
+libraries, Python bindings, development files, and utilities for
+managing and programming AMD Xilinx devices.
+
+This package provides runtime shared libraries for the XRT NPU path.
 
 %package -n python3-xrt
 Summary:        AMD Xilinx Runtime (XRT) - Python bindings
@@ -93,8 +101,12 @@ Requires:       python3%{?_isa}
 Requires:       %{name}%{?_isa} = %{version}-%{release}
 
 %description -n python3-xrt
-Python bindings for XRT.  Facilitates control of AMD Ryzen NPU
-and AMD Xilinx Alveo through Python.
+AMD Xilinx Runtime (XRT) provides a runtime environment for AMD Xilinx
+Alveo FPGAs and AMD Ryzen NPUs.  It includes core runtime
+libraries, Python bindings, development files, and utilities for
+managing and programming AMD Xilinx devices.
+
+This package provides python bindings for XRT.
 
 %package devel
 Summary:        AMD Xilinx Runtime (XRT) - development files
@@ -106,7 +118,12 @@ Requires:       opencl-headers
 Requires:       rocm-hip-devel%{?_isa}
 
 %description devel
-Library and headers for %{name}
+AMD Xilinx Runtime (XRT) provides a runtime environment for AMD Xilinx
+Alveo FPGAs and AMD Ryzen NPUs.  It includes core runtime
+libraries, Python bindings, development files, and utilities for
+managing and programming AMD Xilinx devices.
+
+This package provides development libraries and headers for %{name}
 
 %package utils
 Summary:        AMD Xilinx Runtime (XRT) - utilities
@@ -115,7 +132,12 @@ Requires:       %{name}%{?_isa} = %{version}-%{release}
 Requires:       opencl-filesystem
 
 %description utils
-General purpose XRT command-line tools.
+AMD Xilinx Runtime (XRT) provides a runtime environment for AMD Xilinx
+Alveo FPGAs and AMD Ryzen NPUs.  It includes core runtime
+libraries, Python bindings, development files, and utilities for
+managing and programming AMD Xilinx devices.
+
+This package provides general purpose XRT command-line tools.
 
 %package utils-npu
 Summary:        AMD Xilinx Runtime (XRT) - NPU utilities
@@ -123,15 +145,26 @@ Requires:       %{name}-utils%{?_isa} = %{version}-%{release}
 Requires:       %{name}-npu%{?_isa} = %{version}-%{release}
 
 %description utils-npu
-NPU specific utilities for AMD Ryzen NPU including AIE binary utilities (AIEBU).
+AMD Xilinx Runtime (XRT) provides a runtime environment for AMD Xilinx
+Alveo FPGAs and AMD Ryzen NPUs.  It includes core runtime
+libraries, Python bindings, development files, and utilities for
+managing and programming AMD Xilinx devices.
+
+This package provides utilities for AMD Ryzen NPU including AIE binary
+utilities (AIEBU).
 
 %package utils-alveo
 Summary:        AMD Xilinx Runtime (XRT) - Alveo utilities
 Requires:       %{name}-utils%{?_isa} = %{version}-%{release}
 
 %description utils-alveo
-Alveo-specific utilities for AMD Xilinx Alveo including management and
-flash tools.
+AMD Xilinx Runtime (XRT) provides a runtime environment for AMD Xilinx
+Alveo FPGAs and AMD Ryzen NPUs.  It includes core runtime
+libraries, Python bindings, development files, and utilities for
+managing and programming AMD Xilinx devices.
+
+This package provides utilities for AMD Xilinx Alveo including
+management and flash tools.
 
 %prep
 %autosetup -n %{name}-%{version} -p1
@@ -219,6 +252,7 @@ rm -rf %{buildroot}/runtime_src
 %files
 %license xrt/XRT/LICENSE
 %license xrt/XRT/NOTICE
+%doc xrt/XRT/README.rst
 %{_libdir}/libxilinxopencl.so.*
 %{_libdir}/libxrt++.so.*
 %{_libdir}/libxrt_core.so.*
