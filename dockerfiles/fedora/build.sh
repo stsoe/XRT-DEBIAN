@@ -1,10 +1,15 @@
 #!/bin/bash
-# Filter sources and run rpmbuild for src/fedora/xrt.spec (Fedora analogue of
-# dockerfiles/build.sh for Debian). Run inside the Fedora container with the
-# repo mounted at /workspace/XRT-DEBIAN (see docker-run-fed.sh).
+# This build script prepares the staging repo
+# - https://github.com/stsoe/XRT-DEBIAN
+# for rpmbuild through xrt.spec.
 #
-# Patches are applied in the spec %%prep step (debian/patches/series); do not
-# run quilt here.
+# The script creates a new tarball from the repo sources (this current
+# clone) as opposed to using the tagged release tarball (see
+# build-release.sh).  Otherwise the script behaves as
+# build-release.sh and should be run within a Fedora docker container.
+#
+# Use this script to validate new repo sources and to create a tarball
+# for a new tagged release.
 
 set -euo pipefail
 
