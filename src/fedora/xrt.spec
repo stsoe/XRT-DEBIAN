@@ -29,6 +29,8 @@ Patch8:         xrt-9730.patch
 Patch9:         xrt-9731.patch
 Patch10:        xrt-9738.patch
 Patch11:        xdna-1255.patch
+Patch12:        xrt-9813.patch
+Patch13:        xdna-1333.patch
 
 # Fedora patches
 Patch100:       dkms-disable.patch
