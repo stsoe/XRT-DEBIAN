@@ -1,10 +1,14 @@
-# SPDX-License-Identifier: Apache-2.0
-# Spec layout mirrors src/debian/control and src/debian/rules.
-# Assisted-by:    Generic LLM chatbot
+# SPDX-License-Identifier: MIT
+%global xrt_major 2
+%global xrt_minor 21
+%global xrt_patch 75
+%global xrt_release %{xrt_major}.%{xrt_minor}
+%global xrt_version %{xrt_release}.%{xrt_patch}
+
 Name:           xrt
 Version:        2.21.75
-Release:        1%{?dist}
-Summary:        AMD Xilinx FPGA and ACAP runtime (XRT)
+Release:        %autorelease
+Summary:        Run Time for AIE and FPGA based platforms
 
 License:        Apache-2.0 AND MIT AND MIT-Khronos-old
 URL:            https://github.com/Xilinx/XRT
@@ -16,7 +20,6 @@ URL:            https://github.com/Xilinx/XRT
 
 Source0:        https://github.com/Xilinx/XRT/releases/download/%{version}/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 
-# Debian patches
 Patch0:         6.18.patch
 Patch1:         6.19.patch
 Patch2:         hip.patch
@@ -31,14 +34,18 @@ Patch10:        xrt-9738.patch
 Patch11:        xdna-1255.patch
 Patch12:        xrt-9813.patch
 Patch13:        xdna-1333.patch
+Patch14:        xdna-1371.patch
+Patch15:        xrt-9848.patch
 
-# Fedora patches
 Patch100:       dkms-disable.patch
 Patch101:       static.patch
+# License verbiage was fixed in upstream per review.txt
 Patch102:       license.patch
 Patch103:       xbmgmt-link.patch
 Patch104:       emu-disable.patch
 Patch105:       enable-testing.patch
+# Support RelWithDebInfo in AIEBU
+Patch106:       aiebu-297.patch
 
 # Man pages not installed by CMake
 Source10:       aiebu-asm.1
@@ -47,34 +54,40 @@ Source12:       xbflash.qspi.1
 Source13:       xbflash2.1
 Source14:       xbmgmt.1
 Source15:       xclbinutil.1
-Source16:       xrt-replay.1
 
 ExclusiveArch:  aarch64 x86_64
 
-BuildRequires:  cmake >= 3.16
+# Build toolchain
+BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig
+
+# System/hardware libraries
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(openssl)
-BuildRequires:  pkgconfig(yaml-cpp)
-BuildRequires:  pkgconfig(RapidJSON)
 BuildRequires:  pkgconfig(ocl-icd)
 BuildRequires:  opencl-headers
+BuildRequires:  libuuid-devel
+BuildRequires:  ncurses-devel
+BuildRequires:  systemtap-sdt-devel
+
+# C++ libraries
 BuildRequires:  boost-devel
+BuildRequires:  pkgconfig(RapidJSON)
 BuildRequires:  protobuf-devel
 BuildRequires:  protobuf-compiler
-BuildRequires:  ncurses-devel
-BuildRequires:  libuuid-devel
-BuildRequires:  python3-devel
-BuildRequires:  pybind11-devel
-BuildRequires:  systemtap-sdt-devel
-BuildRequires:  doxygen
-BuildRequires:  appstream
-BuildRequires:  python3-rpm-macros
 BuildRequires:  rocm-hip-devel
+
+# Python bindings
+BuildRequires:  python3-devel
+BuildRequires:  python3-rpm-macros
+BuildRequires:  pybind11-devel
+
+# Documentation / packaging helpers
+BuildRequires:  doxygen
 BuildRequires:  bash-completion
 
 %description
@@ -173,7 +186,7 @@ management and flash tools.
 
 %build
 %cmake \
-  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_BUILD_TYPE=RelWithDebInfo \
   -DXRT_NPU=1 \
   -DXRT_ALVEO=1 \
   -DCMAKE_BUILD_RPATH_USE_ORIGIN=ON \
@@ -193,12 +206,11 @@ management and flash tools.
 # Move xbtop Python module to correct Fedora location
 install -d -p %{buildroot}%{python3_sitearch}
 mv %{buildroot}%{_prefix}/python/_xbtop %{buildroot}%{python3_sitearch}/
+mv -f %{buildroot}%{_prefix}/python/xbtop.py %{buildroot}%{_bindir}/xbtop 2>/dev/null || :
+mv -f %{buildroot}%{python3_sitearch}/xbtop.py %{buildroot}%{_bindir}/xbtop 2>/dev/null || :
 rmdir %{buildroot}%{_prefix}/python 2>/dev/null || :
 
 # Move the installed Python entry script over the bin wrapper from CMake.
-mv -f %{buildroot}%{_prefix}/python/xbtop.py %{buildroot}%{_bindir}/xbtop 2>/dev/null || :
-mv -f %{buildroot}%{python3_sitearch}/xbtop.py %{buildroot}%{_bindir}/xbtop 2>/dev/null || :
-
 # Fix python script permissions
 chmod 755 %{buildroot}%{_bindir}/xbtop
 chmod 755 %{buildroot}%{python3_sitearch}/_xbtop/*.py
@@ -238,7 +250,6 @@ find %{buildroot}%{_libdir} -mindepth 1 -maxdepth 1 -name 'libsched*.so' -delete
 rm -rf %{buildroot}/usr/license
 rm -rf %{buildroot}%{_docdir}
 rm -rf %{buildroot}/usr/local
-rm -rf %{buildroot}%{_datadir}/completions
 rm -rf %{buildroot}/usr/version.json
 rm -rf %{buildroot}/.clang-tidy
 rm -rf %{buildroot}/CMake
@@ -256,18 +267,18 @@ XILINX_XRT=%{buildroot}/usr \
 %license xrt/XRT/LICENSE
 %license xrt/XRT/NOTICE
 %doc xrt/XRT/README.rst
-%{_libdir}/libxilinxopencl.so.*
-%{_libdir}/libxrt++.so.*
-%{_libdir}/libxrt_core.so.*
-%{_libdir}/libxrt_coreutil.so.*
-%{_libdir}/libxrt_hip.so.*
+%{_libdir}/libxilinxopencl.so.%{xrt_major}{,.*}
+%{_libdir}/libxrt++.so.%{xrt_major}{,.*}
+%{_libdir}/libxrt_core.so.%{xrt_major}{,.*}
+%{_libdir}/libxrt_coreutil.so.%{xrt_major}{,.*}
+%{_libdir}/libxrt_hip.so.%{xrt_major}{,.*}
 
 %files npu
-%{_libdir}/libxrt_driver_xdna.so.*
-%{_libdir}/libxdp*.so.*
+%{_libdir}/libxrt_driver_xdna.so.%{xrt_major}{,.*}
+%{_libdir}/libxdp*.so.%{xrt_major}{,.*}
 %dir %{_libdir}/xrt
 %dir %{_libdir}/xrt/module
-%{_libdir}/xrt/*/libxdp*.so.*
+%{_libdir}/xrt/*/libxdp*.so.%{xrt_major}{,.*}
 
 %files -n python3-xrt
 %dir %{python3_sitearch}/_xbtop/
@@ -308,5 +319,4 @@ XILINX_XRT=%{buildroot}/usr \
 %{_datadir}/bash-completion/completions/xbmgmt2
 
 %changelog
-* Mon Apr 20 2026 Fedora Packaging <stsoe@amd.com> - 2.21.75-1
-- Initial Fedora spec mirroring src/debian binary package split.
+%autochangelog

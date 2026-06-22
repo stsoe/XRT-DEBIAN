@@ -1,0 +1,25 @@
+diff --git a/src/cpp/utils/asm/CMakeLists.txt b/src/cpp/utils/asm/CMakeLists.txt
+index b0507b77..4de42dc2 100644
+--- a/xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/utils/asm/CMakeLists.txt
++++ b/xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/utils/asm/CMakeLists.txt
+@@ -59,7 +59,7 @@ endif()
+ 
+ install(TARGETS aiebu-asm
+   RUNTIME DESTINATION ${AIEBU_INSTALL_BIN_DIR}
+-  CONFIGURATIONS Debug Release
++  CONFIGURATIONS Debug Release RelWithDebInfo
+   COMPONENT ${AIEBU_COMPONENT}
+   )
+ 
+diff --git a/src/cpp/utils/dump/CMakeLists.txt b/src/cpp/utils/dump/CMakeLists.txt
+index a2e5c57b..2a4cb9ba 100644
+--- a/xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/utils/dump/CMakeLists.txt
++++ b/xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/utils/dump/CMakeLists.txt
+@@ -58,6 +58,6 @@ endif()
+ 
+ install(TARGETS aiebu-dump
+   RUNTIME DESTINATION ${AIEBU_INSTALL_BIN_DIR}
+-  CONFIGURATIONS Debug Release
++  CONFIGURATIONS Debug Release RelWithDebInfo
+   COMPONENT ${AIEBU_COMPONENT}
+   )
