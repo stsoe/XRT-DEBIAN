@@ -10,13 +10,45 @@ Version:        2.21.75
 Release:        %autorelease
 Summary:        Run Time for AIE and FPGA based platforms
 
-License:        Apache-2.0 AND MIT AND MIT-Khronos-old
+License:        Apache-2.0 AND MIT AND Khronos
 URL:            https://github.com/Xilinx/XRT
 
 # License breakdown:
-# - Core XRT runtime: Apache-2.0
-# - AIE binary utilities: MIT
-# - Core XRT OpenCL library: Apache-2.0 and MIT-Khronos-old
+# Files: *
+# - License: Apache-2.0
+#
+# Files: xrt/XRT/src/runtime_src/xocl/api/khronos/check_copy_overlap.cpp
+#        xrt-2.21.75-build/xrt-2.21.75/xrt/XRT/src/include/1_2/CL/cl_ext.h
+#        xrt-2.21.75-build/xrt-2.21.75/xrt/XRT/src/include/1_2/CL/cl_ext_xilinx.h
+# - License: Khronos
+#
+# Files: xrt/XRT/src/runtime_src/core/common/aie-rt/*
+# - License: MIT
+#
+# Files: xrt/XRT/src/runtime_src/core/common/aiebu/*
+# - License: MIT
+#
+# Files: xrt/XRT/src/runtime_src/core/common/elf/elfio/*
+# - License: MIT
+#
+# Files: xrt/XRT/src/runtime_src/core/common/gsl
+# - License: MIT
+#
+# Files: xrt/XRT/src/runtime_src/core/pcie/driver/linux/*
+# - License: GPL-2
+#
+# Files: xrt/XRT/src/runtime_src/core/include/xclbin.h
+#        xrt/XRT/src/runtime_src/core/include/xcl_graph.h
+#        xrt/XRT/src/runtime_src/core/include/xrt/deprecated/xclerr.h
+#        xrt/XRT/src/runtime_src/core/include/xrt/detail/ert.h
+#        xrt/XRT/src/runtime_src/core/include/xrt/detail/xclbin.h
+#        xrt/XRT/src/runtime_src/core/include/xrt/detail/xrt_error_code.h
+#        xrt/XRT/src/runtime_src/core/include/xrt/detail/xrt_mem.h
+# License: Apache-2.0 or GPL-2
+#
+# Files: xdna/xdna-driver/src/shim/virtio/amdxdna_proto.h
+#        xdna/xdna-driver/src/shim/virtio/drm_hw.h
+# - License: MIT
 
 Source0:        https://github.com/Xilinx/XRT/releases/download/%{version}/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 
@@ -39,7 +71,8 @@ Patch15:        xrt-9848.patch
 
 Patch100:       dkms-disable.patch
 Patch101:       static.patch
-# License verbiage was fixed in upstream per review.txt
+# License verbiage was fixed in upstream per review.txt.  This patch
+# resolves rpmlint review and reflects changes made in upstream XRT
 Patch102:       license.patch
 Patch103:       xbmgmt-link.patch
 Patch104:       emu-disable.patch
@@ -100,6 +133,7 @@ This package provides the core runtime environment for XRT.
 
 %package npu
 Summary:        AMD Xilinx Runtime (XRT) - NPU runtime libraries
+License:        MIT
 Requires:       %{name}%{?_isa} = %{version}-%{release}
 
 %description npu
@@ -112,6 +146,7 @@ This package provides runtime shared libraries for the XRT NPU path.
 
 %package -n python3-xrt
 Summary:        AMD Xilinx Runtime (XRT) - Python bindings
+License:        Apache-2.0
 Requires:       python3%{?_isa}
 Requires:       %{name}%{?_isa} = %{version}-%{release}
 
@@ -184,6 +219,70 @@ management and flash tools.
 %prep
 %autosetup -n %{name}-%{version} -p1
 
+# Exclude unused code for easier license review
+rm -rf debian
+rm -rf xdna/xdna-driver/src/driver
+rm -rf xdna/xdna-driver/src/shim_ve2
+rm -rf xdna/xdna-driver/tools
+rm -rf xrt/XRT/.clangd
+rm -rf xrt/XRT/.github
+rm -rf xrt/XRT/.travis.yml
+rm -rf xrt/XRT/build
+rm -rf xrt/XRT/pyrightconfig.json
+rm -rf xrt/XRT/src/.clang-tidy
+rm -rf xrt/XRT/src/platform
+rm -rf xrt/XRT/src/runtime_src/aie-rt/driver/docs
+rm -rf xrt/XRT/src/runtime_src/aie-rt/driver/tests
+rm -rf xrt/XRT/src/runtime_src/aie-rt/fal
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/.github
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/build.gradle
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/gradle.properties
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/publish
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/pyrightconfig.json
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/settings.gradle
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/.dir-locals.el
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/.clang-format
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/.github
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/.tipi/deps
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/.tipi/opts
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/.travis.yml
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/BUILD.bazel
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/CHANGELOG.md
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/INSTALL
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/README.md
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/WORKSPACE
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/packaging
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/src/.tipi
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/test
+rm -rf xrt/XRT/src/runtime_src/core/common/drv
+rm -rf xrt/XRT/src/runtime_src/core/common/elf/.clang-format
+rm -rf xrt/XRT/src/runtime_src/core/common/elf/.github
+rm -rf xrt/XRT/src/runtime_src/core/common/elf/.vscode
+rm -rf xrt/XRT/src/runtime_src/core/common/elf/CMakeLists.txt
+rm -rf xrt/XRT/src/runtime_src/core/common/elf/cmake
+rm -rf xrt/XRT/src/runtime_src/core/common/elf/doc
+rm -rf xrt/XRT/src/runtime_src/core/common/elf/examples
+rm -rf xrt/XRT/src/runtime_src/core/common/elf/tests
+rm -rf xrt/XRT/src/runtime_src/core/common/runner/test
+rm -rf xrt/XRT/src/runtime_src/core/edge
+rm -rf xrt/XRT/src/runtime_src/core/pcie/driver/.dir-locals.el
+rm -rf xrt/XRT/src/runtime_src/core/pcie/driver/aws
+rm -rf xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl
+rm -rf xrt/XRT/src/runtime_src/core/pcie/driver/windows
+rm -rf xrt/XRT/src/runtime_src/core/pcie/emulation
+rm -rf xrt/XRT/src/runtime_src/core/pcie/tools/README
+rm -rf xrt/XRT/src/runtime_src/core/tools/xbtracer
+rm -rf xrt/XRT/src/runtime_src/doc
+rm -rf xrt/XRT/src/runtime_src/ert
+rm -rf xrt/XRT/src/runtime_src/tools/scripts/apu_recipes
+rm -rf xrt/XRT/src/runtime_src/tools/scripts/is_supported.json
+rm -rf xrt/XRT/src/runtime_src/tools/scripts/pkgapu.sh
+rm -rf xrt/XRT/src/runtime_src/tools/scripts/rtplot
+rm -rf xrt/XRT/src/runtime_src/tools/xclbinutil/aie-pdi-transform/.clang-tidy
+rm -rf xrt/XRT/src/runtime_src/tools/xclbinutil/unittests
+rm -rf xrt/XRT/src/runtime_src/xrt/test
+rm -rf xrt/XRT/tests
+
 %build
 %cmake \
   -DCMAKE_BUILD_TYPE=RelWithDebInfo \
@@ -234,6 +333,28 @@ install -Dpm 0644 %{buildroot}%{_datadir}/completions/xbmgmt-bash-completion \
    %{buildroot}%{bash_completions_dir}/xbmgmt2 || :
 rm -rf %{buildroot}%{_datadir}/completions 2>/dev/null || :
 
+# Install bundled submodule license files with unique names to avoid collisions
+install -d %{buildroot}%{_licensedir}/%{name}
+install -pm 0644 xrt/XRT/LICENSE \
+   %{buildroot}%{_licensedir}/%{name}/LICENSE.xrt
+install -pm 0644 xrt/XRT/NOTICE \
+   %{buildroot}%{_licensedir}/%{name}/NOTICE.xrt
+install -pm 0644 xrt/XRT/src/runtime_src/core/common/aiebu/LICENSE \
+   %{buildroot}%{_licensedir}/%{name}/LICENSE.aiebu
+install -pm 0644 xrt/XRT/src/runtime_src/core/common/aiebu/NOTICE \
+   %{buildroot}%{_licensedir}/%{name}/NOTICE.aiebu
+install -pm 0644 xrt/XRT/src/runtime_src/core/common/elf/LICENSE.txt \
+   %{buildroot}%{_licensedir}/%{name}/LICENSE.elf
+install -pm 0644 xrt/XRT/src/runtime_src/core/common/gsl/LICENSE \
+   %{buildroot}%{_licensedir}/%{name}/LICENSE.gsl
+install -pm 0644 xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/LICENSE \
+   %{buildroot}%{_licensedir}/%{name}/LICENSE.cxxopts
+install -pm 0644 xrt/XRT/src/runtime_src/aie-rt/license.txt \
+   %{buildroot}%{_licensedir}/%{name}/LICENSE.aie-rt
+install -d %{buildroot}%{_licensedir}/%{name}-npu
+install -pm 0644 xdna/xdna-driver/LICENSE.amdnpu \
+   %{buildroot}%{_licensedir}/%{name}-npu/LICENSE.amdnpu
+
 # ---------------------------------------------------------------------------
 # Remove paths upstream installs but no subpackage lists, so rpmbuild
 # check-files does not fail on orphans.
@@ -264,8 +385,8 @@ XILINX_XRT=%{buildroot}/usr \
 
 
 %files
-%license xrt/XRT/LICENSE
-%license xrt/XRT/NOTICE
+%dir %{_licensedir}/%{name}
+%{_licensedir}/%{name}/*
 %doc xrt/XRT/README.rst
 %{_libdir}/libxilinxopencl.so.%{xrt_major}{,.*}
 %{_libdir}/libxrt++.so.%{xrt_major}{,.*}
@@ -274,6 +395,9 @@ XILINX_XRT=%{buildroot}/usr \
 %{_libdir}/libxrt_hip.so.%{xrt_major}{,.*}
 
 %files npu
+%dir %{_licensedir}/%{name}-npu
+%{_licensedir}/%{name}-npu/*
+%doc xdna/xdna-driver/README.md
 %{_libdir}/libxrt_driver_xdna.so.%{xrt_major}{,.*}
 %{_libdir}/libxdp*.so.%{xrt_major}{,.*}
 %dir %{_libdir}/xrt
