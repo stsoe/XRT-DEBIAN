@@ -9,7 +9,7 @@ Usage: $0 [IMAGE_NAME] [CONTAINER_NAME]
 Runs a container with this repository mounted at /workspace/XRT-DEBIAN.
 
 Arguments:
-  IMAGE_NAME       Docker image (default: rpmbuild-fedora-xrt:42)
+  IMAGE_NAME       Docker image (default: rpmbuild-fedora-xrt:44)
   CONTAINER_NAME   Container name (default: rpmbuild-fedora-dev)
 
 Options:
@@ -19,7 +19,7 @@ Inside the container:
   ./dockerfiles/fedora/build-fed.sh
 
 Example:
-  $0 rpmbuild-fedora-xrt:42 my-fedora-build
+  $0 rpmbuild-fedora-xrt:44 my-fedora-build
 EOF
   exit 0
 }
@@ -31,8 +31,8 @@ esac
 SCRIPT_DIR=$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")
 ROOT_DIR=$(readlink -f "${SCRIPT_DIR}/../..")
 
-IMAGE_NAME="${1:-rpmbuild-fedora-xrt:42}"
-CONTAINER_NAME="${2:-rpmbuild-fedora-dev}"
+IMAGE_NAME="${1:-rpmbuild-fedora-xrt:44}"
+CONTAINER_NAME="${2:-rpmbuild-fedora-dev-44}"
 
 if docker ps -a --format '{{.Names}}' | grep -qx "${CONTAINER_NAME}"; then
   echo "Container ${CONTAINER_NAME} already exists; starting..."

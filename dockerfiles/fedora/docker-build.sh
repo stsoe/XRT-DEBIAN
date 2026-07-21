@@ -9,10 +9,10 @@ Usage: $0 [IMAGE_NAME]
 Builds the Fedora Docker image defined in this directory.
 
 Arguments:
-  IMAGE_NAME   Image name:tag (default: rpmbuild-fedora-xrt:42)
+  IMAGE_NAME   Image name:tag (default: rpmbuild-fedora-xrt:44)
 
 Environment:
-  FEDORA_VERSION   Base Fedora release passed as Docker build-arg (default: 42)
+  FEDORA_VERSION   Base Fedora release passed as Docker build-arg (default: 44)
 
 Options:
   -h, --help     Show this help message
@@ -29,14 +29,14 @@ case "${1:-}" in
 esac
 
 SCRIPT_DIR=$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")
-IMAGE_NAME="${1:-rpmbuild-fedora-xrt:42}"
-FEDORA_VERSION="${FEDORA_VERSION:-42}"
+IMAGE_NAME="${1:-rpmbuild-fedora-xrt:44}"
+FEDORA_VERSION="${FEDORA_VERSION:-44}"
 
 echo "Building image: ${IMAGE_NAME} (FROM fedora:${FEDORA_VERSION})"
 docker build \
   --build-arg "FEDORA_VERSION=${FEDORA_VERSION}" \
   -t "${IMAGE_NAME}" \
-  -f "${SCRIPT_DIR}/f42.Dockerfile" \
+  -f "${SCRIPT_DIR}/f44.Dockerfile" \
   "${SCRIPT_DIR}"
 
 echo ""
