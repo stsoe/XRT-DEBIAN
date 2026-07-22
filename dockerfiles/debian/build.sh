@@ -25,24 +25,8 @@ rsync -avz . /tmp/upstream/build/
 
 # Filter
 cd /tmp/upstream/build
+${ROOT_DIR}/dockerfiles/common/filter-sources.sh
 /bin/rm -rf fedora
-/bin/rm -rf xdna/xdna-driver/xrt
-/bin/rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/ELFIO
-/bin/rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/lib/aie-rt
-/bin/rm -rf xrt/XRT/src/runtime_src/core/edge/user/test
-/bin/rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/publish
-/bin/rm -rf xrt/XRT/src/runtime_src/aie-codegen/driver
-find . -type f -name .git -exec /bin/rm -rf {} \;
-find . -type f -name .gitattributes -exec /bin/rm -rf {} \;
-find . -type f -name .gitignore -exec /bin/rm -rf {} \;
-find . -type f -name .gitmodules -exec /bin/rm -rf {} \;
-find . -depth -type d -name elf_examples -exec /bin/rm -rf {} +
-find . -type f -name usertest -exec /bin/rm -rf {} \;
-find . -type f -name \*.elf -exec /bin/rm {} \;
-find . -type f -name \*.a -exec /bin/rm {} \;
-find . -type f -name \*.swn -exec /bin/rm {} \;
-find . -type f -name \*.swo -exec /bin/rm {} \;
-/bin/rm -rf xdna/xdna-driver/tools/bins
 
 # Create the source archive from filtered sources. We don't apply
 # patches here because they are applied on the extracted tarball
