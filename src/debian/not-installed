@@ -6,6 +6,7 @@ python/*
 runtime_src/*
 bins/lib/*
 usr/bin/*.sh
+usr/bin/xrt-replay
 usr/bin/mpd
 usr/bin/msd
 usr/etc/*.service

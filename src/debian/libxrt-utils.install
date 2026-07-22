@@ -1,3 +1,4 @@
-usr/bin/xrt-smi
 usr/bin/xclbinutil
+usr/bin/xrt-capture
+usr/bin/xrt-smi
 etc/OpenCL/vendors/*.icd

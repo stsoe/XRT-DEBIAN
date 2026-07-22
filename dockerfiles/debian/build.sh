@@ -31,7 +31,7 @@ cd /tmp/upstream/build
 /bin/rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/lib/aie-rt
 /bin/rm -rf xrt/XRT/src/runtime_src/core/edge/user/test
 /bin/rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/publish
-/bin/rm -rf xrt/XRT/src/runtime_src/aie-rt/driver/tests/utest/elf_files
+/bin/rm -rf xrt/XRT/src/runtime_src/aie-codegen/driver
 find . -type f -name .git -exec /bin/rm -rf {} \;
 find . -type f -name .gitattributes -exec /bin/rm -rf {} \;
 find . -type f -name .gitignore -exec /bin/rm -rf {} \;
