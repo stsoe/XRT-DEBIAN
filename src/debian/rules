@@ -23,7 +23,6 @@ override_dh_auto_install:
 	  mkdir -p debian/libxrt-alveo2/usr/lib/$(DEB_HOST_GNU_TYPE); \
 	  mv debian/tmp/usr/lib/$(DEB_HOST_GNU_TYPE)/libxrt_hwemu*.so.* debian/libxrt-alveo2/usr/lib/$(DEB_HOST_GNU_TYPE); \
 	  mv debian/tmp/usr/lib/$(DEB_HOST_GNU_TYPE)/libxrt_swemu*.so.* debian/libxrt-alveo2/usr/lib/$(DEB_HOST_GNU_TYPE); \
-	  mv debian/tmp/usr/lib/$(DEB_HOST_GNU_TYPE)/libxrt_noop.so.* debian/libxrt-alveo2/usr/lib/$(DEB_HOST_GNU_TYPE); \
 	fi
 
 	# udev rules
