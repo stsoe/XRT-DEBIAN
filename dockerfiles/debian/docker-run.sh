@@ -45,7 +45,7 @@ esac
 
 # Get the directory where this script is located (TheRock root)
 SCRIPT_DIR=$(readlink -f $(dirname ${BASH_SOURCE[0]}))
-ROOT_DIR=$(readlink -f $SCRIPT_DIR/..)
+ROOT_DIR=$(readlink -f $SCRIPT_DIR/../..)
 
 # Check if container already exists
 if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
