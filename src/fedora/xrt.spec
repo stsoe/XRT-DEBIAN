@@ -52,32 +52,77 @@ URL:            https://github.com/Xilinx/XRT
 
 Source0:        https://github.com/Xilinx/XRT/releases/download/%{version}/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 
+# Backport eventfd_signal() simplification from Linux v6.8 to v6.7 kernel module
+# Linux commit 3652117f854819a148ff0fbe4492587d3520b5e5
+# https://github.com/Xilinx/XRT/pull/9730
 Patch0:         6.18.patch
+# Restore legacy uppercase DRM log helpers removed in newer kernels
+# https://github.com/Xilinx/XRT/pull/9672
 Patch1:         6.19.patch
+# Add missing <cstdint> include to core/common/utils.h for std::uint* types
+# https://github.com/Xilinx/XRT/pull/9730
 Patch2:         hip.patch
+# Remove obsolete cmake version check for xbtracer subdirectory conditional
+# https://github.com/Xilinx/XRT/pull/9730
 Patch3:         tracer.patch
+# Fix static initialization order and update copyright year in HIP device files
+# https://github.com/Xilinx/XRT/pull/9730
 Patch4:         hip2.patch
+# Fix xrt-smi platform path lookup, message logging, and archive handling
+# https://github.com/Xilinx/XRT/pull/9730
 Patch5:         xrt-smi.patch
+# Fix trailing whitespace and const-correctness in HIP memory API functions
+# https://github.com/Xilinx/XRT/pull/9730
 Patch6:         hip3.patch
+# Add run buffer pool max-size config knob; fix pool memory cache logic
+# https://github.com/Xilinx/XRT/pull/9657
 Patch7:         xrt-9660.patch
+# Add missing <cstring> include to core/common/message.cpp
+# https://github.com/Xilinx/XRT/pull/9730
 Patch8:         xrt-9730.patch
+# Suppress GCC 16 -Warray-bounds warnings; fix strncpy off-by-one in HIP
+# https://github.com/Xilinx/XRT/pull/9731
 Patch9:         xrt-9731.patch
+# Remove unused loop counters causing GCC warnings; update copyright years
+# https://github.com/Xilinx/XRT/pull/9738
 Patch10:        xrt-9738.patch
+# Fix compilation errors with GCC 16 in XDNA UMQ debug hardware queue
+# https://github.com/amd/xdna-driver/pull/1255
 Patch11:        xdna-1255.patch
+# Fix missing comma in pyxrt pybind11 method chain causing build error
+# https://github.com/Xilinx/XRT/pull/9813
 Patch12:        xrt-9813.patch
+# Guard XDNA buffer mmap against null range address; fix physical address return
+# https://github.com/amd/xdna-driver/pull/1333
 Patch13:        xdna-1333.patch
+# Remove unused XDNA UMQ AIE debug infrastructure files
+# https://github.com/amd/xdna-driver/pull/1371
 Patch14:        xdna-1371.patch
+# Add bounds-checking to fix security vulnerability in xclbin AIE_PARTITION parsing
+# https://github.com/Xilinx/XRT/pull/9848
 Patch15:        xrt-9848.patch
 
+# Add XRT_ENABLE_DKMS cmake option so DKMS can be disabled at configure time
+# https://github.com/Xilinx/XRT/pull/9751
 Patch100:       dkms-disable.patch
+# Add XRT_INSTALL_STATIC_LIBRARY option; gate static lib installs behind it
+# https://github.com/Xilinx/XRT/pull/9753
+# https://github.com/Xilinx/aiebu/pull/276
 Patch101:       static.patch
 # License verbiage was fixed in upstream per review.txt.  This patch
 # resolves rpmlint review and reflects changes made in upstream XRT
+# https://github.com/Xilinx/XRT/pull/9753
 Patch102:       license.patch
+# Drop unused boost_system and boost filesystem link dependencies from xbmgmt2
 Patch103:       xbmgmt-link.patch
+# Add XRT_ENABLE_EMULATION cmake option to disable Alveo emulation libraries
+# https://github.com/Xilinx/XRT/pull/9753
 Patch104:       emu-disable.patch
+# Call enable_testing() in top-level CMakeLists so ctest targets are registered
+# https://github.com/Xilinx/XRT/pull/9768
 Patch105:       enable-testing.patch
-# Support RelWithDebInfo in AIEBU
+# Support RelWithDebInfo in AIEBU install configurations
+# https://github.com/Xilinx/aiebu/pull/297
 Patch106:       aiebu-297.patch
 
 # Man pages not installed by CMake
