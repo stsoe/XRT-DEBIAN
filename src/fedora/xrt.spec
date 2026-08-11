@@ -285,6 +285,7 @@ rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/gradle.properties
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/publish
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/pyrightconfig.json
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/settings.gradle
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/lib/aie-rt
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/.dir-locals.el
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/.clang-format
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/.github
@@ -351,7 +352,6 @@ rm -rf xrt/XRT/tests
 install -d -p %{buildroot}%{python3_sitearch}
 mv %{buildroot}%{_prefix}/python/_xbtop %{buildroot}%{python3_sitearch}/
 mv -f %{buildroot}%{_prefix}/python/xbtop.py %{buildroot}%{_bindir}/xbtop 2>/dev/null || :
-mv -f %{buildroot}%{python3_sitearch}/xbtop.py %{buildroot}%{_bindir}/xbtop 2>/dev/null || :
 rmdir %{buildroot}%{_prefix}/python 2>/dev/null || :
 
 # Move the installed Python entry script over the bin wrapper from CMake.
@@ -430,8 +430,7 @@ XILINX_XRT=%{buildroot}/usr \
 
 
 %files
-%dir %{_licensedir}/%{name}
-%{_licensedir}/%{name}/*
+%license %{_licensedir}/%{name}/*
 %doc xrt/XRT/README.rst
 %{_libdir}/libxilinxopencl.so.%{xrt_major}{,.*}
 %{_libdir}/libxrt++.so.%{xrt_major}{,.*}
@@ -440,8 +439,7 @@ XILINX_XRT=%{buildroot}/usr \
 %{_libdir}/libxrt_hip.so.%{xrt_major}{,.*}
 
 %files npu
-%dir %{_licensedir}/%{name}-npu
-%{_licensedir}/%{name}-npu/*
+%license %{_licensedir}/%{name}-npu/*
 %doc xdna/xdna-driver/README.md
 %{_libdir}/libxrt_driver_xdna.so.%{xrt_major}{,.*}
 %{_libdir}/libxdp*.so.%{xrt_major}{,.*}
