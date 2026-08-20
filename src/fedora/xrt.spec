@@ -10,17 +10,12 @@ Version:        2.21.75
 Release:        %autorelease
 Summary:        Run Time for AIE based platforms
 
-License:        Apache-2.0 AND MIT
+License:        Apache-2.0 AND MIT AND GPL-2.0-only
 URL:            https://github.com/Xilinx/XRT
 
 # License breakdown:
 # Files: *
 # - License: Apache-2.0
-#
-# Files: xrt/XRT/src/runtime_src/xocl/api/khronos/check_copy_overlap.cpp
-#        xrt-2.21.75-build/xrt-2.21.75/xrt/XRT/src/include/1_2/CL/cl_ext.h
-#        xrt-2.21.75-build/xrt-2.21.75/xrt/XRT/src/include/1_2/CL/cl_ext_xilinx.h
-# - License: Khronos
 #
 # Files: xrt/XRT/src/runtime_src/core/common/aie-rt/*
 # - License: MIT
