@@ -21,8 +21,6 @@ Copyright: 2001-present, Serge Lamikhov-Center
 License: MIT
 
 Files: xrt/XRT/src/runtime_src/core/common/drv/*
- xrt/XRT/src/runtime_src/core/edge/drm/zocl/*
- xrt/XRT/src/runtime_src/core/edge/include/zynq_ioctl.h
  xrt/XRT/src/runtime_src/core/pcie/driver/aws/kernel/mgmt/mgmt-sysfs.c
  xrt/XRT/src/runtime_src/core/pcie/driver/linux/*
 Copyright: 2017 - 2020 Xilinx, Inc.
@@ -75,10 +73,6 @@ License: BSD-2-clause or GPL-2+
 Files: xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/*
 Copyright: 2014-2022, Jarryd Beck
 License: Expat
-
-Files: xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/test/catch.hpp
-Copyright: 2024 Two Blue Cubes Ltd. All rights reserved.
-License: Boost-1.0
 
 Files: xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/utils/*
  xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/ops/*
@@ -151,25 +145,11 @@ Copyright: 2013-2025, Niels Lohmann <https://nlohmann.me>
 License: MIT
 
 Files: xdna/xdna-driver/src/shim/*
- xdna/xdna-driver/src/shim_ve2/*
- xdna/xdna-driver/tools/*
  xdna/xdna-driver/test/*
  xdna/xdna-driver/CMakeLists.txt
  xdna/xdna-driver/CMake/*
 Copyright: 2022-2025, Advanced Micro Devices, Inc. All rights reserved.
 License: Apache-2.0
-
-Files: xdna/xdna-driver/src/driver/*
-Copyright: 2022-2025, Advanced Micro Devices, Inc.
-License: GPL-2
-
-Files: xdna/xdna-driver/src/shim/virtio/drm_hw.h
-Copyright: 2022, Google LLC
-License: MIT
-
-Files: xdna/xdna-driver/src/shim/virtio/amdxdna_proto.h
-Copyright: 2025, Advanced Micro Devices, Inc.
-License: MIT
 
 Files: xrt/XRT/src/runtime_src/xocl/api/khronos/check_copy_overlap.cpp
 Copyright: 2011, The Khronos Group Inc.

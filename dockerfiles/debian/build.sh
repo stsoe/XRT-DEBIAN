@@ -8,6 +8,7 @@
 SCRIPT_DIR=$(readlink -f $(dirname ${BASH_SOURCE[0]}))
 ROOT_DIR=$(readlink -f $SCRIPT_DIR/../..)
 HERE=$PWD
+VERSION=2.25.0
 
 # Update submodules, can only done as user
 # git submodule update --init --recursive
@@ -26,12 +27,17 @@ rsync -avz . /tmp/upstream/build/
 # Filter
 cd /tmp/upstream/build
 ${ROOT_DIR}/dockerfiles/common/filter-sources.sh
-/bin/rm -rf fedora
 
 # Create the source archive from filtered sources. We don't apply
 # patches here because they are applied on the extracted tarball
 # sources by the build.
-tar cvfJ /tmp/upstream/xrt-src.tar.xz .
+/bin/rm -f "xrt-${VERSION}.tar.gz"
+tar \
+  --exclude='debian' \
+  --exclude='fedora' \
+  --transform "s,^\(\./\)\?,xrt-${VERSION}/," \
+  --exclude-vcs \
+  -czf "xrt-${VERSION}.tar.gz" .
 
 # Apply patches. For local native builds (see debian/source/format)
 # debuild does not apply patches automatically.
