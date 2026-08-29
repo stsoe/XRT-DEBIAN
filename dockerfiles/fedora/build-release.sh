@@ -32,25 +32,24 @@ cd /tmp
 
 # Download the official release tarball
 curl -L -o "xrt-${VERSION}.tar.gz" \
-     "https://github.com/Xilinx/XRT/releases/download/${VERSION}/${VERSION}.tar.gz"
-
-echo "==> Verifying checksum (optional but recommended)"
-# Add SHA256SUMS check here if available from releases page
-
-echo "==> Repackage tarbal with top-level directory"
-
-/bin/rm -rf xrt-${VERSION}
-mkdir xrt-${VERSION}
-tar -xf xrt-${VERSION}.tar.gz -C xrt-${VERSION}
-tar -czf xrt-${VERSION}.tar.gz xrt-${VERSION}
+     "https://github.com/Xilinx/XRT/releases/download/${VERSION}/xrt-${VERSION}.tar.gz"
 
 echo "==> Installing spec and upstream tarball into ${RPMTOPDIR}"
 install -D -m0644 "${SPEC_SRC}" "${RPMTOPDIR}/SPECS/xrt.spec"
 install -D -m0644 "xrt-${VERSION}.tar.gz" "${RPMTOPDIR}/SOURCES/xrt-${VERSION}.tar.gz"
 
 echo "==> Installing patches to ${RPMTOPDIR}/SOURCES"
-cp ${ROOT_DIR}/src/debian/patches/*.patch ${RPMTOPDIR}/SOURCES
-cp ${ROOT_DIR}/src/fedora/patches/*.patch ${RPMTOPDIR}/SOURCES
+# Check and copy Debian patches
+debian_patches=(${ROOT_DIR}/src/debian/patches/*.patch)
+if [ -e "${debian_patches[0]}" ]; then
+    cp "${debian_patches[@]}" "${RPMTOPDIR}/SOURCES"
+fi
+
+# Check and copy Fedora patches
+fedora_patches=(${ROOT_DIR}/src/fedora/patches/*.patch)
+if [ -e "${fedora_patches[0]}" ]; then
+    cp "${fedora_patches[@]}" "${RPMTOPDIR}/SOURCES"
+fi
 
 echo "==> Installing manpages ${RPMTOPDIR}/SOURCES"
 cp ${ROOT_DIR}/src/debian/man/* ${RPMTOPDIR}/SOURCES
@@ -64,13 +63,3 @@ export CXX="ccache g++"
 # build without clean (prevese buildroot for inspection)
 rpmbuild -ba --noclean "${RPMTOPDIR}/SPECS/xrt.spec"
 ccache --show-stats || true
-
-# OUT="${OUT:-/tmp/upstream/rpm-artifacts}"
-# mkdir -p "${OUT}"
-# find "${RPMTOPDIR}/RPMS" -type f -name '*.rpm' -print0 | xargs -0 -r cp -t "${OUT}/"
-# find "${RPMTOPDIR}/SRPMS" -type f -name '*.rpm' -print0 | xargs -0 -r cp -t "${OUT}/" || true
-
-# echo ""
-# echo "rpmbuild topdir: ${RPMTOPDIR}"
-# echo "Copied RPMs and SRPM to: ${OUT}"
-# ls -la "${OUT}"

@@ -1,26 +1,21 @@
 # SPDX-License-Identifier: MIT
 %global xrt_major 2
-%global xrt_minor 21
-%global xrt_patch 75
+%global xrt_minor 25
+%global xrt_patch 0
 %global xrt_release %{xrt_major}.%{xrt_minor}
 %global xrt_version %{xrt_release}.%{xrt_patch}
 
 Name:           xrt
-Version:        2.21.75
+Version:        2.25.0
 Release:        %autorelease
-Summary:        Run Time for AIE and FPGA based platforms
+Summary:        Run Time for AIE based platforms
 
-License:        Apache-2.0 AND MIT AND Khronos
+License:        Apache-2.0 AND MIT AND GPL-2.0-only
 URL:            https://github.com/Xilinx/XRT
 
 # License breakdown:
 # Files: *
 # - License: Apache-2.0
-#
-# Files: xrt/XRT/src/runtime_src/xocl/api/khronos/check_copy_overlap.cpp
-#        xrt-2.21.75-build/xrt-2.21.75/xrt/XRT/src/include/1_2/CL/cl_ext.h
-#        xrt-2.21.75-build/xrt-2.21.75/xrt/XRT/src/include/1_2/CL/cl_ext_xilinx.h
-# - License: Khronos
 #
 # Files: xrt/XRT/src/runtime_src/core/common/aie-rt/*
 # - License: MIT
@@ -52,41 +47,10 @@ URL:            https://github.com/Xilinx/XRT
 
 Source0:        https://github.com/Xilinx/XRT/releases/download/%{version}/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 
-Patch0:         6.18.patch
-Patch1:         6.19.patch
-Patch2:         hip.patch
-Patch3:         tracer.patch
-Patch4:         hip2.patch
-Patch5:         xrt-smi.patch
-Patch6:         hip3.patch
-Patch7:         xrt-9660.patch
-Patch8:         xrt-9730.patch
-Patch9:         xrt-9731.patch
-Patch10:        xrt-9738.patch
-Patch11:        xdna-1255.patch
-Patch12:        xrt-9813.patch
-Patch13:        xdna-1333.patch
-Patch14:        xdna-1371.patch
-Patch15:        xrt-9848.patch
-
-Patch100:       dkms-disable.patch
-Patch101:       static.patch
-# License verbiage was fixed in upstream per review.txt.  This patch
-# resolves rpmlint review and reflects changes made in upstream XRT
-Patch102:       license.patch
-Patch103:       xbmgmt-link.patch
-Patch104:       emu-disable.patch
-Patch105:       enable-testing.patch
-# Support RelWithDebInfo in AIEBU
-Patch106:       aiebu-297.patch
-
 # Man pages not installed by CMake
 Source10:       aiebu-asm.1
 Source11:       aiebu-dump.1
-Source12:       xbflash.qspi.1
-Source13:       xbflash2.1
-Source14:       xbmgmt.1
-Source15:       xclbinutil.1
+Source12:       xclbinutil.1
 
 ExclusiveArch:  aarch64 x86_64
 
@@ -110,9 +74,6 @@ BuildRequires:  systemtap-sdt-devel
 # C++ libraries
 BuildRequires:  boost-devel
 BuildRequires:  pkgconfig(RapidJSON)
-BuildRequires:  protobuf-devel
-BuildRequires:  protobuf-compiler
-BuildRequires:  rocm-hip-devel
 
 # Python bindings
 BuildRequires:  python3-devel
@@ -124,25 +85,12 @@ BuildRequires:  doxygen
 BuildRequires:  bash-completion
 
 %description
-AMD Xilinx Runtime (XRT) provides a runtime environment for AMD Xilinx
-Alveo FPGAs and AMD Ryzen NPUs.  It includes core runtime
-libraries, Python bindings, development files, and utilities for
-managing and programming AMD Xilinx devices.
+AMD Xilinx Runtime (XRT) provides a runtime environment for AMD Ryzen
+NPUs. It includes core runtime libraries, Python bindings,
+development files, and utilities for managing and programming AMD
+Xilinx devices.
 
 This package provides the core runtime environment for XRT.
-
-%package npu
-Summary:        AMD Xilinx Runtime (XRT) - NPU runtime libraries
-License:        MIT
-Requires:       %{name}%{?_isa} = %{version}-%{release}
-
-%description npu
-AMD Xilinx Runtime (XRT) provides a runtime environment for AMD Xilinx
-Alveo FPGAs and AMD Ryzen NPUs.  It includes core runtime
-libraries, Python bindings, development files, and utilities for
-managing and programming AMD Xilinx devices.
-
-This package provides runtime shared libraries for the XRT NPU path.
 
 %package -n python3-xrt
 Summary:        AMD Xilinx Runtime (XRT) - Python bindings
@@ -151,10 +99,10 @@ Requires:       python3%{?_isa}
 Requires:       %{name}%{?_isa} = %{version}-%{release}
 
 %description -n python3-xrt
-AMD Xilinx Runtime (XRT) provides a runtime environment for AMD Xilinx
-Alveo FPGAs and AMD Ryzen NPUs.  It includes core runtime
-libraries, Python bindings, development files, and utilities for
-managing and programming AMD Xilinx devices.
+AMD Xilinx Runtime (XRT) provides a runtime environment for AMD Ryzen
+NPUs. It includes core runtime libraries, Python bindings,
+development files, and utilities for managing and programming AMD
+Xilinx devices.
 
 This package provides python bindings for XRT.
 
@@ -164,57 +112,15 @@ Requires:       python3-xrt%{?_isa} = %{version}-%{release}
 Requires:       %{name}%{?_isa} = %{version}-%{release}
 Requires:       %{name}-npu%{?_isa} = %{version}-%{release}
 Requires:       libuuid-devel
-Requires:       opencl-headers
 Requires:       rocm-hip-devel%{?_isa}
 
 %description devel
-AMD Xilinx Runtime (XRT) provides a runtime environment for AMD Xilinx
-Alveo FPGAs and AMD Ryzen NPUs.  It includes core runtime
-libraries, Python bindings, development files, and utilities for
-managing and programming AMD Xilinx devices.
+AMD Xilinx Runtime (XRT) provides a runtime environment for AMD Ryzen
+NPUs. It includes core runtime libraries, Python bindings,
+development files, and utilities for managing and programming AMD
+Xilinx devices.
 
 This package provides development libraries and headers for %{name}
-
-%package utils
-Summary:        AMD Xilinx Runtime (XRT) - utilities
-Requires:       python3%{?_isa}
-Requires:       %{name}%{?_isa} = %{version}-%{release}
-Requires:       opencl-filesystem
-
-%description utils
-AMD Xilinx Runtime (XRT) provides a runtime environment for AMD Xilinx
-Alveo FPGAs and AMD Ryzen NPUs.  It includes core runtime
-libraries, Python bindings, development files, and utilities for
-managing and programming AMD Xilinx devices.
-
-This package provides general purpose XRT command-line tools.
-
-%package utils-npu
-Summary:        AMD Xilinx Runtime (XRT) - NPU utilities
-Requires:       %{name}-utils%{?_isa} = %{version}-%{release}
-Requires:       %{name}-npu%{?_isa} = %{version}-%{release}
-
-%description utils-npu
-AMD Xilinx Runtime (XRT) provides a runtime environment for AMD Xilinx
-Alveo FPGAs and AMD Ryzen NPUs.  It includes core runtime
-libraries, Python bindings, development files, and utilities for
-managing and programming AMD Xilinx devices.
-
-This package provides utilities for AMD Ryzen NPU including AIE binary
-utilities (AIEBU).
-
-%package utils-alveo
-Summary:        AMD Xilinx Runtime (XRT) - Alveo utilities
-Requires:       %{name}-utils%{?_isa} = %{version}-%{release}
-
-%description utils-alveo
-AMD Xilinx Runtime (XRT) provides a runtime environment for AMD Xilinx
-Alveo FPGAs and AMD Ryzen NPUs.  It includes core runtime
-libraries, Python bindings, development files, and utilities for
-managing and programming AMD Xilinx devices.
-
-This package provides utilities for AMD Xilinx Alveo including
-management and flash tools.
 
 %prep
 %autosetup -n %{name}-%{version} -p1
@@ -230,6 +136,7 @@ rm -rf xrt/XRT/.travis.yml
 rm -rf xrt/XRT/build
 rm -rf xrt/XRT/pyrightconfig.json
 rm -rf xrt/XRT/src/.clang-tidy
+rm -rf xrt/XRT/src/include
 rm -rf xrt/XRT/src/platform
 rm -rf xrt/XRT/src/runtime_src/aie-rt/driver/docs
 rm -rf xrt/XRT/src/runtime_src/aie-rt/driver/tests
@@ -240,6 +147,7 @@ rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/gradle.properties
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/publish
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/pyrightconfig.json
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/settings.gradle
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/lib/aie-rt
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/.dir-locals.el
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/.clang-format
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/.github
@@ -270,7 +178,9 @@ rm -rf xrt/XRT/src/runtime_src/core/pcie/driver/aws
 rm -rf xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl
 rm -rf xrt/XRT/src/runtime_src/core/pcie/driver/windows
 rm -rf xrt/XRT/src/runtime_src/core/pcie/emulation
-rm -rf xrt/XRT/src/runtime_src/core/pcie/tools/README
+rm -rf xrt/XRT/src/runtime_src/core/pcie/noop
+rm -rf xrt/XRT/src/runtime_src/core/pcie/tools
+rm -rf xrt/XRT/src/runtime_src/core/pcie/windows
 rm -rf xrt/XRT/src/runtime_src/core/tools/xbtracer
 rm -rf xrt/XRT/src/runtime_src/doc
 rm -rf xrt/XRT/src/runtime_src/ert
@@ -280,14 +190,14 @@ rm -rf xrt/XRT/src/runtime_src/tools/scripts/pkgapu.sh
 rm -rf xrt/XRT/src/runtime_src/tools/scripts/rtplot
 rm -rf xrt/XRT/src/runtime_src/tools/xclbinutil/aie-pdi-transform/.clang-tidy
 rm -rf xrt/XRT/src/runtime_src/tools/xclbinutil/unittests
-rm -rf xrt/XRT/src/runtime_src/xrt/test
+rm -rf xrt/XRT/src/runtime_src/xocl
+rm -rf xrt/XRT/src/runtime_src/xrt
 rm -rf xrt/XRT/tests
 
 %build
 %cmake \
   -DCMAKE_BUILD_TYPE=RelWithDebInfo \
   -DXRT_NPU=1 \
-  -DXRT_ALVEO=1 \
   -DCMAKE_BUILD_RPATH_USE_ORIGIN=ON \
   -DXRT_ENABLE_HIP=ON \
   -DXRT_ENABLE_TRACER=OFF \
@@ -300,37 +210,16 @@ rm -rf xrt/XRT/tests
 %install
 %cmake_install
 
-# xbtop: CMake installs the package under %%{_prefix}/python/ (see XRT_INSTALL_PYTHON_DIR
-# in xrtVariables.cmake).
-# Move xbtop Python module to correct Fedora location
-install -d -p %{buildroot}%{python3_sitearch}
-mv %{buildroot}%{_prefix}/python/_xbtop %{buildroot}%{python3_sitearch}/
-mv -f %{buildroot}%{_prefix}/python/xbtop.py %{buildroot}%{_bindir}/xbtop 2>/dev/null || :
-mv -f %{buildroot}%{python3_sitearch}/xbtop.py %{buildroot}%{_bindir}/xbtop 2>/dev/null || :
-rmdir %{buildroot}%{_prefix}/python 2>/dev/null || :
-
-# Move the installed Python entry script over the bin wrapper from CMake.
-# Fix python script permissions
-chmod 755 %{buildroot}%{_bindir}/xbtop
-chmod 755 %{buildroot}%{python3_sitearch}/_xbtop/*.py
-chmod 644 %{buildroot}%{python3_sitearch}/_xbtop/__init__.py
-
-# CMake installs xbflash2 under %%{_prefix}/local/bin; ship as %%{_bindir}/xbflash2.
-mv -f %{buildroot}%{_prefix}/local/bin/xbflash2 %{buildroot}%{_bindir}/xbflash2
-rmdir %{buildroot}%{_prefix}/local/bin %{buildroot}%{_prefix}/local 2>/dev/null || :
-
 # Man pages, not installed by upstream CMake
 install -d -m 0755 %{buildroot}%{_mandir}/man1
-install -p -m 0644 %{SOURCE10} %{SOURCE11} %{SOURCE12} %{SOURCE13} \
-        %{SOURCE14} %{SOURCE15} %{buildroot}%{_mandir}/man1/
+install -p -m 0644 %{SOURCE10} %{SOURCE11} %{SOURCE12} \
+   %{buildroot}%{_mandir}/man1/
 
 # Bash completion
 # Upstream CMake puts in wrong location - move to correct path
 install -d -m 0755 %{buildroot}%{bash_completions_dir}
 install -Dpm 0644 %{buildroot}%{_datadir}/completions/xbutil-bash-completion \
    %{buildroot}%{bash_completions_dir}/xrt-smi || :
-install -Dpm 0644 %{buildroot}%{_datadir}/completions/xbmgmt-bash-completion \
-   %{buildroot}%{bash_completions_dir}/xbmgmt2 || :
 rm -rf %{buildroot}%{_datadir}/completions 2>/dev/null || :
 
 # Install bundled submodule license files with unique names to avoid collisions
@@ -363,6 +252,7 @@ rm -rf %{buildroot}/bins
 find %{buildroot}%{_bindir} -mindepth 1 -maxdepth 1 -type f -name '*.sh' -delete
 rm -rf %{buildroot}%{_bindir}/{mpd,msd}
 rm -rf %{buildroot}/usr/etc
+rm -rf %{buildroot}/etc
 find %{buildroot}%{_includedir} -mindepth 1 -maxdepth 1 -name 'm*d_plugin.h' -delete
 find %{buildroot}%{_libdir} -mindepth 1 -maxdepth 1 -name 'libaws*.so*' -delete
 find %{buildroot}%{_libdir} -mindepth 1 -maxdepth 1 -name 'libazure*.so*' -delete
@@ -383,64 +273,39 @@ rm -rf %{buildroot}/runtime_src
 XILINX_XRT=%{buildroot}/usr \
 %{__ctest} --test-dir redhat-linux-build --output-on-failure --force-new-ctest-process -j%{?_smp_build_ncpus}
 
-
 %files
-%dir %{_licensedir}/%{name}
-%{_licensedir}/%{name}/*
+%license %{_licensedir}/%{name}/*
+%license %{_licensedir}/%{name}-npu/*
 %doc xrt/XRT/README.rst
-%{_libdir}/libxilinxopencl.so.%{xrt_major}{,.*}
-%{_libdir}/libxrt++.so.%{xrt_major}{,.*}
+%doc xdna/xdna-driver/README.md
 %{_libdir}/libxrt_core.so.%{xrt_major}{,.*}
 %{_libdir}/libxrt_coreutil.so.%{xrt_major}{,.*}
 %{_libdir}/libxrt_hip.so.%{xrt_major}{,.*}
-
-%files npu
-%dir %{_licensedir}/%{name}-npu
-%{_licensedir}/%{name}-npu/*
-%doc xdna/xdna-driver/README.md
 %{_libdir}/libxrt_driver_xdna.so.%{xrt_major}{,.*}
 %{_libdir}/libxdp*.so.%{xrt_major}{,.*}
 %dir %{_libdir}/xrt
 %dir %{_libdir}/xrt/module
 %{_libdir}/xrt/*/libxdp*.so.%{xrt_major}{,.*}
-
-%files -n python3-xrt
-%dir %{python3_sitearch}/_xbtop/
-%{python3_sitearch}/pyxrt*.so
-%{python3_sitearch}/_xbtop/*
-%{_bindir}/xbtop
-
-%files devel
-%dir %{_includedir}/xrt
-%{_includedir}/xrt/*
-%{_includedir}/CL/*
-%{_includedir}/hip/*
-%{_libdir}/pkgconfig/*.pc
-%{_libdir}/*.so
-%dir %{_datadir}/cmake/XRT
-%{_datadir}/cmake/XRT/*
-
-%files utils
 %{_bindir}/xrt-smi
-%{_bindir}/xclbinutil
-%{_sysconfdir}/OpenCL/vendors/*.icd
-%{_mandir}/man1/xclbinutil.1*
 %{_datadir}/bash-completion/completions/xrt-smi
-
-%files utils-npu
+%{_bindir}/xclbinutil
+%{_mandir}/man1/xclbinutil.1*
 %{_bindir}/xrt-runner
 %{_bindir}/aiebu-*
 %{_mandir}/man1/aiebu-asm.1*
 %{_mandir}/man1/aiebu-dump.1*
 
-%files utils-alveo
-%{_bindir}/xbflash.qspi
-%{_bindir}/xbmgmt
-%{_bindir}/xbflash2
-%{_mandir}/man1/xbflash2.1*
-%{_mandir}/man1/xbflash.qspi.1*
-%{_mandir}/man1/xbmgmt.1*
-%{_datadir}/bash-completion/completions/xbmgmt2
+%files -n python3-xrt
+%{python3_sitearch}/pyxrt*.so
+
+%files devel
+%dir %{_includedir}/xrt
+%{_includedir}/xrt/*
+%{_includedir}/hip/*
+%{_libdir}/pkgconfig/*.pc
+%{_libdir}/*.so
+%dir %{_datadir}/cmake/XRT
+%{_datadir}/cmake/XRT/*
 
 %changelog
 %autochangelog

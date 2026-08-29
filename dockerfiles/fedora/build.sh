@@ -39,33 +39,18 @@ echo "==> Staging filtered sources under /tmp/upstream (same filters as Debian b
 mkdir -p /tmp/upstream/build
 rsync -a "${ROOT_DIR}/src/" /tmp/upstream/build/
 
+# Filter
 cd /tmp/upstream/build
+${ROOT_DIR}/dockerfiles/common/filter-sources.sh
 
-/bin/rm -rf xdna/xdna-driver/xrt
-/bin/rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/ELFIO
-/bin/rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/lib/aie-rt
-/bin/rm -rf xrt/XRT/src/runtime_src/core/edge/user/test
-/bin/rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/publish
-/bin/rm -rf xrt/XRT/src/runtime_src/aie-rt/driver/tests/utest/elf_files
-find . -type f -name .git -exec /bin/rm -rf {} \;
-find . -type f -name .gitattributes -exec /bin/rm -f {} \;
-find . -type f -name .gitignore -exec /bin/rm -f {} \;
-find . -type f -name .gitmodules -exec /bin/rm -f {} \;
-# Depth-first: avoid "No such file or directory" when rm -rf removes a dir
-# find is still descending into (POSIX: deleting dirs during find is undefined).
-find . -depth -type d -name elf_examples -exec /bin/rm -rf {} +
-find . -type f -name usertest -exec /bin/rm -f {} \;
-find . -type f -name '*.elf' -exec /bin/rm -f {} \;
-find . -type f -name '*.a' -exec /bin/rm -f {} \;
-find . -type f -name '*.swn' -exec /bin/rm -f {} \;
-find . -type f -name '*.swo' -exec /bin/rm -f {} \;
-/bin/rm -rf xdna/xdna-driver/tools/bins
-
-echo "==> Creating Source0 tarball xrt-${VERSION}.tar.gz (GNU tar --transform)"
-cd /tmp/upstream
+# Create the source archive from filtered sources. We don't apply
+# patches here because they are applied on the extracted tarball
+# sources by the build.
 /bin/rm -f "xrt-${VERSION}.tar.gz"
-tar -C build \
-  --transform "s,^,xrt-${VERSION}/," \
+tar \
+  --exclude='debian' \
+  --exclude='fedora' \
+  --transform "s,^\(\./\)\?,xrt-${VERSION}/," \
   --exclude-vcs \
   -czf "xrt-${VERSION}.tar.gz" .
 
@@ -74,8 +59,17 @@ install -D -m0644 "${SPEC_SRC}" "${RPMTOPDIR}/SPECS/xrt.spec"
 install -D -m0644 "/tmp/upstream/xrt-${VERSION}.tar.gz" "${RPMTOPDIR}/SOURCES/xrt-${VERSION}.tar.gz"
 
 echo "==> Installing patches to ${RPMTOPDIR}/SOURCES"
-cp ${ROOT_DIR}/src/debian/patches/*.patch ${RPMTOPDIR}/SOURCES
-cp ${ROOT_DIR}/src/fedora/patches/*.patch ${RPMTOPDIR}/SOURCES
+# Check and copy Debian patches
+debian_patches=(${ROOT_DIR}/src/debian/patches/*.patch)
+if [ -e "${debian_patches[0]}" ]; then
+    cp "${debian_patches[@]}" "${RPMTOPDIR}/SOURCES"
+fi
+
+# Check and copy Fedora patches
+fedora_patches=(${ROOT_DIR}/src/fedora/patches/*.patch)
+if [ -e "${fedora_patches[0]}" ]; then
+    cp "${fedora_patches[@]}" "${RPMTOPDIR}/SOURCES"
+fi
 
 echo "==> Installing manpages ${RPMTOPDIR}/SOURCES"
 cp ${ROOT_DIR}/src/debian/man/* ${RPMTOPDIR}/SOURCES
@@ -87,13 +81,3 @@ export CC="ccache gcc"
 export CXX="ccache g++"
 rpmbuild -ba --noclean "${RPMTOPDIR}/SPECS/xrt.spec"
 ccache --show-stats || true
-
-OUT="${OUT:-/tmp/upstream/rpm-artifacts}"
-mkdir -p "${OUT}"
-find "${RPMTOPDIR}/RPMS" -type f -name '*.rpm' -print0 | xargs -0 -r cp -t "${OUT}/"
-find "${RPMTOPDIR}/SRPMS" -type f -name '*.rpm' -print0 | xargs -0 -r cp -t "${OUT}/" || true
-
-echo ""
-echo "rpmbuild topdir: ${RPMTOPDIR}"
-echo "Copied RPMs and SRPM to: ${OUT}"
-ls -la "${OUT}"

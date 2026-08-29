@@ -10,6 +10,7 @@ FROM fedora:${FEDORA_VERSION}
 
 RUN dnf -y upgrade --refresh \
     && dnf -y install \
+        ccache \
         cpio \
         dnf-plugins-core \
         git \
