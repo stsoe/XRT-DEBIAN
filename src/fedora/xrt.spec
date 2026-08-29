@@ -17,10 +17,10 @@ URL:            https://github.com/Xilinx/XRT
 # Files: *
 # - License: Apache-2.0
 #
-# Files: xrt/XRT/src/runtime_src/core/common/aie-rt/*
+# Files: xrt/XRT/src/runtime_src/core/common/aiebu/*
 # - License: MIT
 #
-# Files: xrt/XRT/src/runtime_src/core/common/aiebu/*
+# Files: xrt/XRT/src/runtime_src/core/common/aie-codegen/*
 # - License: MIT
 #
 # Files: xrt/XRT/src/runtime_src/core/common/elf/elfio/*
@@ -138,16 +138,12 @@ rm -rf xrt/XRT/pyrightconfig.json
 rm -rf xrt/XRT/src/.clang-tidy
 rm -rf xrt/XRT/src/include
 rm -rf xrt/XRT/src/platform
-rm -rf xrt/XRT/src/runtime_src/aie-rt/driver/docs
-rm -rf xrt/XRT/src/runtime_src/aie-rt/driver/tests
-rm -rf xrt/XRT/src/runtime_src/aie-rt/fal
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/.github
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/build.gradle
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/gradle.properties
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/publish
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/pyrightconfig.json
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/settings.gradle
-rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/lib/aie-rt
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/.dir-locals.el
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/.clang-format
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/.github
@@ -238,8 +234,8 @@ install -pm 0644 xrt/XRT/src/runtime_src/core/common/gsl/LICENSE \
    %{buildroot}%{_licensedir}/%{name}/LICENSE.gsl
 install -pm 0644 xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/LICENSE \
    %{buildroot}%{_licensedir}/%{name}/LICENSE.cxxopts
-install -pm 0644 xrt/XRT/src/runtime_src/aie-rt/license.txt \
-   %{buildroot}%{_licensedir}/%{name}/LICENSE.aie-rt
+install -pm 0644 xrt/XRT/src/runtime_src/aie-codegen/license.txt \
+   %{buildroot}%{_licensedir}/%{name}/LICENSE.aie-codegen
 install -d %{buildroot}%{_licensedir}/%{name}-npu
 install -pm 0644 xdna/xdna-driver/LICENSE.amdnpu \
    %{buildroot}%{_licensedir}/%{name}-npu/LICENSE.amdnpu
@@ -251,6 +247,7 @@ install -pm 0644 xdna/xdna-driver/LICENSE.amdnpu \
 rm -rf %{buildroot}/bins
 find %{buildroot}%{_bindir} -mindepth 1 -maxdepth 1 -type f -name '*.sh' -delete
 rm -rf %{buildroot}%{_bindir}/{mpd,msd}
+rm -rf %{buildroot}%{_bindir}/xrt-replay
 rm -rf %{buildroot}/usr/etc
 rm -rf %{buildroot}/etc
 find %{buildroot}%{_includedir} -mindepth 1 -maxdepth 1 -name 'm*d_plugin.h' -delete
@@ -258,6 +255,7 @@ find %{buildroot}%{_libdir} -mindepth 1 -maxdepth 1 -name 'libaws*.so*' -delete
 find %{buildroot}%{_libdir} -mindepth 1 -maxdepth 1 -name 'libazure*.so*' -delete
 find %{buildroot}%{_libdir} -mindepth 1 -maxdepth 1 -name 'libcontainer*.so*' -delete
 find %{buildroot}%{_libdir} -mindepth 1 -maxdepth 1 -name 'libsched*.so' -delete
+rm -rf %{buildroot}%{_libdir}/libcert_dtrace.a
 rm -rf %{buildroot}/usr/license
 rm -rf %{buildroot}%{_docdir}
 rm -rf %{buildroot}/usr/local
@@ -290,6 +288,7 @@ XILINX_XRT=%{buildroot}/usr \
 %{_datadir}/bash-completion/completions/xrt-smi
 %{_bindir}/xclbinutil
 %{_mandir}/man1/xclbinutil.1*
+%{_bindir}/xrt-capture
 %{_bindir}/xrt-runner
 %{_bindir}/aiebu-*
 %{_mandir}/man1/aiebu-asm.1*
@@ -297,6 +296,7 @@ XILINX_XRT=%{buildroot}/usr \
 
 %files -n python3-xrt
 %{python3_sitearch}/pyxrt*.so
+%{python3_sitearch}/pyxrt*.pyi
 
 %files devel
 %dir %{_includedir}/xrt
