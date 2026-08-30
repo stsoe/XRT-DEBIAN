@@ -23,7 +23,7 @@ URL:            https://github.com/Xilinx/XRT
 # Files: xrt/XRT/src/runtime_src/core/common/aie-codegen/*
 # - License: MIT
 #
-# Files: xrt/XRT/src/runtime_src/core/common/elf/elfio/*
+# Files: xrt/XRT/src/runtime_src/core/common/elf/*
 # - License: MIT
 #
 # Files: xrt/XRT/src/runtime_src/core/common/gsl
@@ -39,11 +39,15 @@ URL:            https://github.com/Xilinx/XRT
 #        xrt/XRT/src/runtime_src/core/include/xrt/detail/xclbin.h
 #        xrt/XRT/src/runtime_src/core/include/xrt/detail/xrt_error_code.h
 #        xrt/XRT/src/runtime_src/core/include/xrt/detail/xrt_mem.h
-# License: Apache-2.0 or GPL-2
+# - License: Apache-2.0 or GPL-2
 #
+# Files: xrt/XRT/src/python/pybind11/pyxrt.pyi
+# - License: MIT
+
 # Files: xdna/xdna-driver/src/shim/virtio/amdxdna_proto.h
 #        xdna/xdna-driver/src/shim/virtio/drm_hw.h
 # - License: MIT
+#
 
 Source0:        https://github.com/Xilinx/XRT/releases/download/%{version}/%{name}-%{version}.tar.gz
 
@@ -114,7 +118,6 @@ This package provides python bindings for XRT.
 Summary:        AMD Xilinx Runtime (XRT) - development files
 Requires:       python3-xrt%{?_isa} = %{version}-%{release}
 Requires:       %{name}%{?_isa} = %{version}-%{release}
-Requires:       %{name}-npu%{?_isa} = %{version}-%{release}
 Requires:       libuuid-devel
 Requires:       rocm-hip-devel%{?_isa}
 
@@ -131,8 +134,10 @@ This package provides development libraries and headers for %{name}
 
 # Exclude unused code for easier license review
 rm -rf debian
-rm -rf xdna/xdna-driver/src/driver
+rm -rf xdna/xdna-driver/src/drivers
 rm -rf xdna/xdna-driver/src/shim_ve2
+rm -rf xdna/xdna-driver/src/shim/virtio
+rm -rf xdna/xdna-driver/src/vxdna
 rm -rf xdna/xdna-driver/tools
 rm -rf xrt/XRT/.clangd
 rm -rf xrt/XRT/.github
@@ -162,6 +167,7 @@ rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/WORKSPACE
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/packaging
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/src/.tipi
 rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/src/cpp/cxxopts/test
+rm -rf xrt/XRT/src/runtime_src/core/common/aiebu/templates/aie2/stubs.h
 rm -rf xrt/XRT/src/runtime_src/core/common/drv
 rm -rf xrt/XRT/src/runtime_src/core/common/elf/.clang-format
 rm -rf xrt/XRT/src/runtime_src/core/common/elf/.github
@@ -173,6 +179,7 @@ rm -rf xrt/XRT/src/runtime_src/core/common/elf/examples
 rm -rf xrt/XRT/src/runtime_src/core/common/elf/tests
 rm -rf xrt/XRT/src/runtime_src/core/common/runner/test
 rm -rf xrt/XRT/src/runtime_src/core/edge
+rm -rf xrt/XRT/src/runtime_src/core/include/xgq_*
 rm -rf xrt/XRT/src/runtime_src/core/pcie/driver/.dir-locals.el
 rm -rf xrt/XRT/src/runtime_src/core/pcie/driver/aws
 rm -rf xrt/XRT/src/runtime_src/core/pcie/driver/linux/xocl
@@ -184,6 +191,10 @@ rm -rf xrt/XRT/src/runtime_src/core/pcie/windows
 rm -rf xrt/XRT/src/runtime_src/core/tools/xbtracer
 rm -rf xrt/XRT/src/runtime_src/doc
 rm -rf xrt/XRT/src/runtime_src/ert
+rm -rf xrt/XRT/src/runtime_src/tools/xbflash2
+rm -rf xrt/XRT/src/runtime_src/tools/xbmgmt2
+rm -rf xrt/XRT/src/runtime_src/tools/xbtop
+rm -rf xrt/XRT/src/runtime_src/tools/xbtracer
 rm -rf xrt/XRT/src/runtime_src/tools/scripts/apu_recipes
 rm -rf xrt/XRT/src/runtime_src/tools/scripts/is_supported.json
 rm -rf xrt/XRT/src/runtime_src/tools/scripts/pkgapu.sh
@@ -277,6 +288,8 @@ XILINX_XRT=%{buildroot}/usr \
 %{__ctest} --test-dir redhat-linux-build --output-on-failure --force-new-ctest-process -j%{?_smp_build_ncpus}
 
 %files
+%dir %{_licensedir}/%{name}
+%dir %{_licensedir}/%{name}-npu
 %license %{_licensedir}/%{name}/*
 %license %{_licensedir}/%{name}-npu/*
 %doc xrt/XRT/README.rst
