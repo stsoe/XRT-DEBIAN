@@ -72,7 +72,7 @@ if [ -e "${fedora_patches[0]}" ]; then
 fi
 
 echo "==> Installing manpages ${RPMTOPDIR}/SOURCES"
-cp ${ROOT_DIR}/src/debian/man/* ${RPMTOPDIR}/SOURCES
+cp ${ROOT_DIR}/src/xrt/man/* ${RPMTOPDIR}/SOURCES
 
 echo "==> rpmbuild -ba"
 export CCACHE_DIR="/scratch/ccache/rpmbuild"

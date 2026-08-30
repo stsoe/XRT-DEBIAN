@@ -45,12 +45,16 @@ URL:            https://github.com/Xilinx/XRT
 #        xdna/xdna-driver/src/shim/virtio/drm_hw.h
 # - License: MIT
 
-Source0:        https://github.com/Xilinx/XRT/releases/download/%{version}/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        https://github.com/Xilinx/XRT/releases/download/%{version}/%{name}-%{version}.tar.gz
 
 # Man pages not installed by CMake
 Source10:       aiebu-asm.1
 Source11:       aiebu-dump.1
-Source12:       xclbinutil.1
+Source12:       aiebu-transform.1
+Source13:       xclbinutil.1
+Source14:       xrt-capture.1
+Source15:       xrt-runner.1
+Source16:       xrt-smi.1
 
 ExclusiveArch:  aarch64 x86_64
 
@@ -209,6 +213,7 @@ rm -rf xrt/XRT/tests
 # Man pages, not installed by upstream CMake
 install -d -m 0755 %{buildroot}%{_mandir}/man1
 install -p -m 0644 %{SOURCE10} %{SOURCE11} %{SOURCE12} \
+   %{SOURCE13} %{SOURCE14} %{SOURCE15} %{SOURCE16} \
    %{buildroot}%{_mandir}/man1/
 
 # Bash completion
@@ -285,14 +290,18 @@ XILINX_XRT=%{buildroot}/usr \
 %dir %{_libdir}/xrt/module
 %{_libdir}/xrt/*/libxdp*.so.%{xrt_major}{,.*}
 %{_bindir}/xrt-smi
+%{_mandir}/man1/xrt-smi.1*
 %{_datadir}/bash-completion/completions/xrt-smi
 %{_bindir}/xclbinutil
 %{_mandir}/man1/xclbinutil.1*
 %{_bindir}/xrt-capture
+%{_mandir}/man1/xrt-capture.1*
 %{_bindir}/xrt-runner
+%{_mandir}/man1/xrt-runner.1*
 %{_bindir}/aiebu-*
 %{_mandir}/man1/aiebu-asm.1*
 %{_mandir}/man1/aiebu-dump.1*
+%{_mandir}/man1/aiebu-transform.1*
 
 %files -n python3-xrt
 %{python3_sitearch}/pyxrt*.so
