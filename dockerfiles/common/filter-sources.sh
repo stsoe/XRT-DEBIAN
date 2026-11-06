@@ -16,8 +16,9 @@ find . -depth -type f -name .vscode -exec /bin/rm -rf {} \;
 find . -depth -type d -name elf_examples -exec /bin/rm -rf {} \;
 find . -depth -type f -name pyrightconfig.json -exec /bin/rm -rf {} \;
 find . -depth -type f -name usertest -exec /bin/rm -rf {} \;
-find . -depth -type f -name \*.elf -exec /bin/rm {} \;
 find . -depth -type f -name \*.a -exec /bin/rm {} \;
+find . -depth -type f -name \*.bin -exec /bin/rm {} \;
+find . -depth -type f -name \*.elf -exec /bin/rm {} \;
 find . -depth -type f -name \*.swn -exec /bin/rm {} \;
 find . -depth -type f -name \*.swo -exec /bin/rm {} \;
 
